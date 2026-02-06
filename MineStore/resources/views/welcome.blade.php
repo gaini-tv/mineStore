@@ -19,36 +19,72 @@
             </style>
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
+    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+        {{-- Navbar --}}
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-[#FDFDFC]/95 dark:bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-[#e3e3e0] dark:border-[#3E3E3A]">
+            <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-14 lg:h-16">
+                    {{-- Logo / Accueil --}}
+                    <a href="{{ url('/') }}" class="flex items-center gap-2 font-medium text-[#1b1b18] dark:text-[#EDEDEC] hover:text-[#f53003] dark:hover:text-[#FF4433] transition-colors">
+                        <span class="text-lg">{{ config('app.name', 'Laravel') }}</span>
+                    </a>
 
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
+                    {{-- Liens principaux (desktop) --}}
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="{{ url('/') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC] transition-colors">Accueil</a>
+                        <a href="https://laravel.com/docs" target="_blank" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#f53003] dark:hover:text-[#FF4433] transition-colors">Documentation</a>
+                        @if (Route::has('login'))
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC] transition-colors">Dashboard</a>
+                            @endauth
                         @endif
-                    @endauth
-                </nav>
-            @endif
-        </header>
+                    </div>
+
+                    {{-- Actions (connexion / compte) --}}
+                    <div class="flex items-center gap-3">
+                        @if (Route::has('login'))
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-sm border border-[#19140035] dark:border-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] hover:border-[#1915014a] dark:hover:border-[#62605b] transition-colors">
+                                    Dashboard
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC] transition-colors">
+                                    Connexion
+                                </a>
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-sm bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] hover:bg-black dark:hover:bg-white border border-[#1b1b18] dark:border-[#eeeeec] transition-colors">
+                                        S'inscrire
+                                    </a>
+                                @endif
+                            @endauth
+                        @endif
+
+                        {{-- Menu mobile --}}
+                        <button type="button" id="nav-toggle" class="md:hidden p-2 rounded-sm text-[#1b1b18] dark:text-[#EDEDEC] hover:bg-[#e3e3e0] dark:hover:bg-[#3E3E3A] transition-colors" aria-label="Menu">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Menu mobile déroulant --}}
+                <div id="nav-mobile" class="hidden md:hidden pb-4 border-t border-[#e3e3e0] dark:border-[#3E3E3A]">
+                    <div class="flex flex-col gap-1 pt-3">
+                        <a href="{{ url('/') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] dark:text-[#A1A09A] hover:bg-[#e3e3e0] dark:hover:bg-[#3E3E3A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Accueil</a>
+                        <a href="https://laravel.com/docs" target="_blank" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] dark:text-[#A1A09A] hover:bg-[#e3e3e0] dark:hover:bg-[#3E3E3A] hover:text-[#f53003] dark:hover:text-[#FF4433]">Documentation</a>
+                        @if (Route::has('login'))
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] dark:text-[#A1A09A] hover:bg-[#e3e3e0] dark:hover:bg-[#3E3E3A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Dashboard</a>
+                            @endauth
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        {{-- Espace pour la navbar fixe --}}
+        <div class="h-14 lg:h-16 w-full flex-shrink-0" aria-hidden="true"></div>
         <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
@@ -273,5 +309,12 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        <script>
+            document.getElementById('nav-toggle')?.addEventListener('click', function() {
+                const menu = document.getElementById('nav-mobile');
+                menu?.classList.toggle('hidden');
+            });
+        </script>
     </body>
 </html>
