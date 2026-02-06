@@ -1,0 +1,138 @@
+/* Styles de la navbar MineStore (priorité sur le reset Tailwind) */
+nav.navbar,
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.navbar-left {
+    flex-shrink: 0;
+}
+
+.navbar-center,
+.navbar-tabs {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-right {
+    flex-shrink: 0;
+}
+
+.navbar-profile {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #1b1b18 !important;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.navbar-profile:hover {
+    background-color: #e3e3e0;
+}
+
+.navbar-profile.active {
+    background-color: #1b1b18;
+    color: #fff !important;
+}
+
+nav.navbar .navbar-brand,
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #1b1b18 !important;
+    text-decoration: none;
+}
+
+nav.navbar .navbar-brand:hover,
+.navbar-brand:hover {
+    color: #1b1b18 !important;
+}
+
+nav.navbar .navbar-tabs,
+.navbar-tabs {
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-tabs li {
+    margin: 0;
+}
+
+nav.navbar .navbar-tabs a,
+.navbar-tabs a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #1b1b18 !important;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.navbar-tabs a:hover {
+    background-color: #e3e3e0;
+}
+
+.navbar-tabs a.active {
+    background-color: #1b1b18;
+    color: #fff !important;
+}
+
+.navbar-tabs a.active:hover {
+    background-color: #1b1b18;
+    color: #fff;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    nav.navbar .navbar-brand,
+    .navbar-brand {
+        color: #ededec !important;
+    }
+
+    nav.navbar .navbar-tabs a,
+    .navbar-tabs a {
+        color: #ededec !important;
+    }
+
+    .navbar-tabs a:hover {
+        background-color: #3e3e3a;
+    }
+
+    .navbar-tabs a.active {
+        background-color: #ededec;
+        color: #1b1b18 !important;
+    }
+
+    .navbar-tabs a.active:hover {
+        background-color: #ededec;
+        color: #1b1b18;
+    }
+
+    .navbar-profile {
+        color: #ededec !important;
+    }
+
+    .navbar-profile:hover {
+        background-color: #3e3e3a;
+    }
+
+    .navbar-profile.active {
+        background-color: #ededec;
+        color: #1b1b18 !important;
+    }
+}
