@@ -9,3 +9,124 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Minecrafter Alt Font */
+@import url('https://db.onlinewebfonts.com/c/dc7947b63602675ec87b023cfc35d028?family=Minecrafter+Alt');
+
+/* Navbar background image */
+.navbar-bg {
+    background-image: url('/images/navbar.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100px;
+}
+
+/* Navbar flottante avec marges */
+.navbar-floating {
+    top: 30px;
+    left: 100px;
+    right: 100px;
+    width: calc(100% - 200px);
+}
+
+@media (max-width: 768px) {
+    .navbar-floating {
+        left: 20px;
+        right: 20px;
+        width: calc(100% - 40px);
+        top: 20px;
+    }
+}
+
+/* Animation navbar au scroll */
+.navbar-scroll {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.navbar-scroll.navbar-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Barre de recherche avec image de fond */
+.searchbar-container {
+    background-image: url('/images/searchbar.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 70px;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Effet hover pour les liens de la navbar */
+.navbar-link {
+    display: inline-block;
+    color: white !important;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.navbar-link:hover {
+    color: white !important;
+    transform: translateY(-3px);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-link-active {
+    color: white !important;
+    transform: translateY(-2px);
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Effet hover pour les boutons */
+button.navbar-link:hover,
+a.navbar-link:hover {
+    transform: translateY(-3px);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Styles pour la carte produit */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s ease;
+}
+
+
+
+.product-card img {
+    transition: transform 0.3s ease;
+}
+
+
+
+/* Style pour le badge de prix avec image de fond */
+.product-card .price-badge {
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Style pour le bouton panier avec image de fond */
+.product-card button[type="button"] {
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.bas-card {    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;}
