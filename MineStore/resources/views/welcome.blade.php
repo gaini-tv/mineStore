@@ -24,20 +24,22 @@
         <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#e3e3e0]">
             <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-14 lg:h-16">
-                    {{-- Logo / Accueil --}}
-                    <a href="{{ url('/') }}" class="flex items-center gap-2 font-medium text-[#1b1b18] hover:text-[#f53003] transition-colors">
+                    {{-- Logo --}}
+                    <a href="{{ url('/') }}" class="flex items-center gap-2.5 font-medium text-[#1b1b18] hover:text-[#f53003] transition-colors">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-[#1b1b18] text-white shrink-0" aria-hidden="true">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                        </span>
                         <span class="text-lg">{{ config('app.name', 'Laravel') }}</span>
                     </a>
 
-                    {{-- Liens principaux (desktop) --}}
-                    <div class="hidden md:flex items-center gap-6">
-                        <a href="{{ url('/') }}" class="text-sm text-[#706f6c] hover:text-[#1b1b18] transition-colors">Accueil</a>
-                        <a href="https://laravel.com/docs" target="_blank" class="text-sm text-[#706f6c] hover:text-[#f53003] transition-colors">Documentation</a>
-                        @if (Route::has('login'))
-                            @auth
-                                <a href="{{ url('/dashboard') }}" class="text-sm text-[#706f6c] hover:text-[#1b1b18] transition-colors">Dashboard</a>
-                            @endauth
-                        @endif
+                    {{-- Onglets (desktop) --}}
+                    <div class="hidden md:flex items-center gap-8">
+                        <a href="{{ url('/') }}" class="text-sm font-medium text-[#1b1b18] hover:text-[#f53003] transition-colors">Accueil</a>
+                        <a href="{{ url('/produits') }}" class="text-sm text-[#706f6c] hover:text-[#1b1b18] transition-colors">Nos produits</a>
+                        <a href="{{ url('/blog') }}" class="text-sm text-[#706f6c] hover:text-[#1b1b18] transition-colors">Blog</a>
+                        <a href="{{ url('/profil') }}" class="text-sm text-[#706f6c] hover:text-[#1b1b18] transition-colors">Profil</a>
                     </div>
 
                     {{-- Actions (connexion / compte) --}}
@@ -71,13 +73,10 @@
                 {{-- Menu mobile déroulant --}}
                 <div id="nav-mobile" class="hidden md:hidden pb-4 border-t border-[#e3e3e0]">
                     <div class="flex flex-col gap-1 pt-3">
-                        <a href="{{ url('/') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#1b1b18]">Accueil</a>
-                        <a href="https://laravel.com/docs" target="_blank" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#f53003]">Documentation</a>
-                        @if (Route::has('login'))
-                            @auth
-                                <a href="{{ url('/dashboard') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#1b1b18]">Dashboard</a>
-                            @endauth
-                        @endif
+                        <a href="{{ url('/') }}" class="px-3 py-2 rounded-sm text-sm font-medium text-[#1b1b18] hover:bg-[#e3e3e0]">Accueil</a>
+                        <a href="{{ url('/produits') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#1b1b18]">Nos produits</a>
+                        <a href="{{ url('/blog') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#1b1b18]">Blog</a>
+                        <a href="{{ url('/profil') }}" class="px-3 py-2 rounded-sm text-sm text-[#706f6c] hover:bg-[#e3e3e0] hover:text-[#1b1b18]">Profil</a>
                     </div>
                 </div>
             </div>
