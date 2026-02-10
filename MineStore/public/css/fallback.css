@@ -18,6 +18,11 @@ body {
     flex-direction: column;
 }
 
+/* Curseur personnalisé pour tout le site (fallback) */
+* {
+    cursor: url('/images/souris.png'), auto !important;
+}
+
 /* Layout */
 .fixed {
     position: fixed;
@@ -457,7 +462,7 @@ a.navbar-link:hover {
 }
 
 button {
-    cursor: pointer;
+    cursor: url('/images/souris.png'), pointer;
     border: none;
     background: none;
 }
@@ -548,7 +553,7 @@ svg {
 .navbar-link {
     display: inline-block;
     color: white !important;
-    cursor: pointer;
+    cursor: url('/images/souris.png'), pointer;
     vertical-align: middle;
 }
 
@@ -649,4 +654,5 @@ a.navbar-link:hover {
     flex-wrap: nowrap;
     align-content: center;
     justify-content: center;
-    align-items: center;}
+    align-items: center;
+    row-gap: 20px;}

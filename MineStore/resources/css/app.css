@@ -68,7 +68,7 @@
 .navbar-link {
     display: inline-block;
     color: white !important;
-    cursor: pointer;
+    cursor: url('/images/souris.png'), pointer;
     vertical-align: middle;
 }
 
@@ -129,4 +129,10 @@ a.navbar-link:hover {
     flex-wrap: nowrap;
     align-content: center;
     justify-content: center;
-    align-items: center;}
+    align-items: center;
+    row-gap: 20px;}
+
+/* Curseur personnalisé pour tout le site */
+* {
+    cursor: url('/images/souris.png'), auto !important;
+}

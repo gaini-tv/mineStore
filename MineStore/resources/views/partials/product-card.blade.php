@@ -1,20 +1,18 @@
 {{-- Carte produit --}}
 <div class="product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full relative">
-    {{-- Prix en haut à gauche avec image de fond --}}
-    <div class="relative p-4">
-        <div class="price-badge absolute top-4 left-4 z-10"
-             style="background-image: url('{{ asset('images/prix.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; min-width: 100px; min-height: 45px; display: flex; align-items: center; justify-content: center; padding: 8px 20px;">
-            <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
-                {{ $price ?? '0,00' }} €
-            </span>
-        </div>
-    </div>
-
-    {{-- Image au centre --}}
+    {{-- Image avec prix en haut à gauche de l'image --}}
     <div class="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <img src="{{ $image ?? asset('images/placeholder-product.png') }}"
-             alt="{{ $name ?? 'Produit' }}"
-             class="max-w-full max-h-64 object-contain">
+        <div class="relative inline-block max-w-full">
+            <img src="{{ $image ?? asset('images/placeholder-product.png') }}"
+                 alt="{{ $name ?? 'Produit' }}"
+                 class="max-w-full max-h-64 object-contain block">
+            <div class="price-badge absolute top-0 left-0 z-10"
+                 style="background-image: url('{{ asset('images/prix.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; width: 120px; height: 65px; display: flex; align-items: center; justify-content: center; padding-left: 17px; padding-bottom: 25px; ">
+                <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                    {{ $price ?? '0,00' }} €
+                </span>
+            </div>
+        </div>
     </div>
 
     {{-- Informations produit et bouton --}}
