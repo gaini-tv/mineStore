@@ -19,6 +19,7 @@ class Produit extends Model
         'reference',
         'actif',
         'date_creation',
+        'pegi',
     ];
 
     /**

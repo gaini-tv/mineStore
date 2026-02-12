@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produit;
-use App\Models\Commentaire;
 use Illuminate\Http\Request;
 
-class ProduitController extends Controller
+class ProfilController extends Controller
 {
     /**
-     * Affiche la liste des produits avec filtres.
+     * Affiche la page de profil avec les produits filtrés
      */
     public function index(Request $request)
     {
@@ -70,39 +69,15 @@ class ProduitController extends Controller
 
         $produits = $query->get();
 
-        return view('produits.index', [
+        // Récupérer les valeurs min/max pour les filtres
+        $prixMin = Produit::where('actif', true)->min('prix') ?? 0;
+        $prixMax = Produit::where('actif', true)->max('prix') ?? 1000;
+
+        return view('profil.index', [
             'produits' => $produits,
-        ]);
-    }
-
-    /**
-     * Affiche la fiche d'un produit.
-     */
-    public function show($id)
-    {
-        $produit = Produit::where('id_produit', $id)
-            ->where('actif', true)
-            ->firstOrFail();
-
-        // Récupérer les commentaires approuvés du produit
-        $commentaires = Commentaire::where('produit_id', $produit->id_produit)
-            ->where('statut', 'approuvé')
-            ->with('user')
-            ->orderBy('date_', 'desc')
-            ->get();
-
-        // Récupérer 4 produits Pop aléatoires (en excluant le produit actuel)
-        $produitsSuggere = Produit::where('actif', true)
-            ->where('id_produit', '!=', $id)
-            ->where('nom', 'like', '%Pop%')
-            ->inRandomOrder()
-            ->limit(4)
-            ->get();
-
-        return view('produits.show', [
-            'produit' => $produit,
-            'commentaires' => $commentaires,
-            'produitsSuggere' => $produitsSuggere,
+            'prixMin' => $prixMin,
+            'prixMax' => $prixMax,
+            'filters' => $request->all(),
         ]);
     }
 }

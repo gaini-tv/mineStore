@@ -3,9 +3,17 @@
     {{-- Image avec prix en haut à gauche de l'image --}}
     <div class="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <div class="relative inline-block max-w-full">
-            <img src="{{ $image ?? asset('images/placeholder-product.png') }}"
-                 alt="{{ $name ?? 'Produit' }}"
-                 class="max-w-full max-h-64 object-contain block">
+            @if(isset($productId))
+                <a href="{{ route('produits.show', $productId) }}" class="block cursor-pointer">
+                    <img src="{{ $image ?? asset('images/placeholder-product.png') }}"
+                         alt="{{ $name ?? 'Produit' }}"
+                         class="max-w-full max-h-64 object-contain block transition-all duration-300 hover:scale-110 hover:opacity-90">
+                </a>
+            @else
+                <img src="{{ $image ?? asset('images/placeholder-product.png') }}"
+                     alt="{{ $name ?? 'Produit' }}"
+                     class="max-w-full max-h-64 object-contain block transition-all duration-300 hover:scale-110 hover:opacity-90 cursor-pointer">
+            @endif
             <div class="price-badge absolute top-0 left-0 z-10"
                  style="background-image: url('{{ asset('images/prix.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; width: 120px; height: 65px; display: flex; align-items: center; justify-content: center; padding-left: 17px; padding-bottom: 25px; ">
                 <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
@@ -20,7 +28,7 @@
         <h3 class="text-lg font-semibold text-[#1b1b18] mb-2">{{ $name ?? 'Nom du produit' }}</h3>
 
         {{-- Bouton Ajouter au panier avec image de fond --}}
-        <div class="relative mx-auto" style="display: inline-block; width: 33.33%;">
+        <div class="relative mx-auto" style="display: inline-block; width: 63.33%;">
             <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block" style="display: block;">
             <button type="button"
                     class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"

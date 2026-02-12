@@ -26,10 +26,270 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-[#1b1b18] mb-4">Bienvenue sur {{ config('app.name', 'MineStore') }}</h1>
-        <p class="text-[#706f6c]">Votre contenu ici...</p>
-    </div>
+    {{-- Section Nouveautés --}}
+    @if(isset($nouveautes) && $nouveautes->count() > 0)
+        <div class="container mx-auto px-4 py-8">
+            <div class="mb-6" style="padding: 29px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                <h2 class="text-3xl font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">Nos nouveautes</h2>
+                <a href="{{ route('produits.index') }}" class="hover:opacity-80 transition-opacity">
+                    <img src="{{ asset('images/plus.png') }}" alt="Voir tous les produits" class="h-16 w-16">
+                </a>
+            </div>
+            <div class="Allproduits grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                @foreach($nouveautes as $produit)
+                    @include('partials.product-card', [
+                        'name' => $produit->nom,
+                        'description' => $produit->description ?? '',
+                        'price' => number_format($produit->prix, 2, ',', ' '),
+                        'image' => $produit->image ? asset($produit->image) : asset('images/placeholder-product.png'),
+                        'productId' => $produit->id_produit
+                    ])
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    {{-- Section Nos jeux --}}
+    @if(isset($jeux) && $jeux->count() > 0)
+        <div class="container mx-auto px-4 py-8" id="jeux-section" style="padding-top: 10px; padding-bottom: 10px; padding-left: 100px; padding-right: 100px; min-height: 600px;">
+            <div class="mb-6" style="padding: 65px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <h2 class="text-3xl font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">Nos jeux</h2>
+            </div>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row items-center gap-6 p-6 relative" style="min-height: 500px; max-width: 100%;">
+                {{-- Contenu à gauche --}}
+                <div class="flex-1 flex flex-col gap-4" id="jeu-content" style="opacity: 1; transform: translateY(0); display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 40px; max-width: 50%; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+                    <h3 class="text-2xl md:text-3xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif; opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-titre">{{ $jeux[0]->nom }}</h3>
+                    <p class="text-[#706f6c] text-base md:text-lg" style="opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-description">{{ $jeux[0]->description }}</p>
+                    <div class="flex flex-col sm:flex-row gap-4 mt-4" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 20px;">
+                        {{-- Bouton Ajouter au panier --}}
+                        <div class="relative" style="display: inline-block; width: 200px;">
+                            <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
+                            <button type="button"
+                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                <span class="text-white font-bold text-xs md:text-sm" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                    AJOUTER AU PANIER
+                                </span>
+                            </button>
+                        </div>
+                        {{-- Bouton En savoir plus --}}
+                        <div class="relative" style="display: inline-block; width: 200px;">
+                            <img src="{{ asset('images/btnESP.png') }}" alt="" class="w-full h-auto block">
+                            <button type="button"
+                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                <span class="text-white font-bold text-xs md:text-sm" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                    EN SAVOIR PLUS
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {{-- Images empilées à droite --}}
+                <div class="flex-shrink-0 w-full md:w-1/3 lg:w-1/4 relative" style="min-height: 800px; max-width: 50%;">
+                    {{-- Carte du fond (cliquable) - Image du jeu suivant - À droite, décalée vers le bas, 60% de la taille --}}
+                    <div class="absolute cursor-pointer transition-all duration-300 hover:scale-105 flex items-start justify-start" 
+                         style="left: 50%; top: 15%; z-index: 1;"
+                         id="carte-fond"
+                         data-jeu-index="{{ $jeux->count() > 1 ? 1 : 0 }}">
+                        @if($jeux->count() > 1)
+                            <img src="{{ $jeux[1]->image ? asset($jeux[1]->image) : asset('images/placeholder-product.png') }}"
+                                 alt="{{ $jeux[1]->nom }}"
+                                 style="width: auto; height: auto; object-fit: contain; transform: scale(0.6); transform-origin: top left; opacity: 1; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);"
+                                 id="img-carte-fond">
+                        @endif
+                    </div>
+                    {{-- Carte du milieu (cliquable) - Image du 3ème jeu - Au milieu, légèrement décalée, 80% de la taille --}}
+                    <div class="absolute cursor-pointer transition-all duration-300 hover:scale-105 flex items-start justify-start" 
+                         style="left: 30%; top: 8%; z-index: 2;"
+                         id="carte-milieu"
+                         data-jeu-index="{{ $jeux->count() > 2 ? 2 : ($jeux->count() > 1 ? 1 : 0) }}">
+                        @if($jeux->count() > 2)
+                            <img src="{{ $jeux[2]->image ? asset($jeux[2]->image) : asset('images/placeholder-product.png') }}"
+                                 alt="{{ $jeux[2]->nom }}"
+                                 style="width: auto; height: auto; object-fit: contain; transform: scale(0.8); transform-origin: top left; opacity: 1; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);"
+                                 id="img-carte-milieu">
+                        @elseif($jeux->count() > 1)
+                            <img src="{{ $jeux[1]->image ? asset($jeux[1]->image) : asset('images/placeholder-product.png') }}"
+                                 alt="{{ $jeux[1]->nom }}"
+                                 style="width: auto; height: auto; object-fit: contain; transform: scale(0.8); transform-origin: top left; opacity: 1; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);"
+                                 id="img-carte-milieu">
+                        @endif
+                    </div>
+                    {{-- Carte du devant avec image du jeu actuel - À gauche, taille originale (100%), au-dessus --}}
+                    <div class="absolute transition-all duration-500 flex items-start justify-start" 
+                         style="left: 0; top: 0; z-index: 3;"
+                         id="carte-devant">
+                        <img src="{{ $jeux[0]->image ? asset($jeux[0]->image) : asset('images/placeholder-product.png') }}"
+                             alt="{{ $jeux[0]->nom }}"
+                             id="jeu-image"
+                             style="opacity: 1; transform: scale(1); width: auto; height: auto; max-width: none; max-height: none; object-fit: contain; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Données des jeux pour JavaScript --}}
+        @php
+            $jeuxArray = [];
+            foreach($jeux as $jeu) {
+                $jeuxArray[] = [
+                    'nom' => $jeu->nom,
+                    'description' => $jeu->description,
+                    'image' => $jeu->image ? asset($jeu->image) : asset('images/placeholder-product.png'),
+                    'prix' => number_format($jeu->prix, 2, ',', ' ')
+                ];
+            }
+        @endphp
+        <script>
+            const jeuxData = @json($jeuxArray);
+            
+            let currentJeuIndex = 0;
+            
+            function updateCartes() {
+                // Mettre à jour les images des cartes en fonction du jeu actuel avec transition fluide
+                const carteFond = document.getElementById('carte-fond');
+                const carteMilieu = document.getElementById('carte-milieu');
+                
+                if (jeuxData.length > 1) {
+                    // Carte du fond : jeu suivant
+                    const indexFond = (currentJeuIndex + 1) % jeuxData.length;
+                    if (carteFond) {
+                        const imgFond = document.getElementById('img-carte-fond');
+                        if (imgFond) {
+                            // Fade out
+                            imgFond.style.opacity = '0';
+                            setTimeout(() => {
+                                imgFond.src = jeuxData[indexFond].image;
+                                imgFond.alt = jeuxData[indexFond].nom;
+                                // Fade in
+                                setTimeout(() => {
+                                    imgFond.style.opacity = '1';
+                                }, 50);
+                            }, 200);
+                        }
+                        carteFond.setAttribute('data-jeu-index', indexFond);
+                    }
+                    
+                    // Carte du milieu : jeu suivant après
+                    if (jeuxData.length > 2) {
+                        const indexMilieu = (currentJeuIndex + 2) % jeuxData.length;
+                        if (carteMilieu) {
+                            const imgMilieu = document.getElementById('img-carte-milieu');
+                            if (imgMilieu) {
+                                // Fade out
+                                imgMilieu.style.opacity = '0';
+                                setTimeout(() => {
+                                    imgMilieu.src = jeuxData[indexMilieu].image;
+                                    imgMilieu.alt = jeuxData[indexMilieu].nom;
+                                    // Fade in
+                                    setTimeout(() => {
+                                        imgMilieu.style.opacity = '1';
+                                    }, 50);
+                                }, 200);
+                            }
+                            carteMilieu.setAttribute('data-jeu-index', indexMilieu);
+                        }
+                    } else if (jeuxData.length === 2) {
+                        // Si seulement 2 jeux, la carte du milieu affiche le même que le fond
+                        if (carteMilieu) {
+                            const imgMilieu = document.getElementById('img-carte-milieu');
+                            if (imgMilieu) {
+                                // Fade out
+                                imgMilieu.style.opacity = '0';
+                                setTimeout(() => {
+                                    imgMilieu.src = jeuxData[indexFond].image;
+                                    imgMilieu.alt = jeuxData[indexFond].nom;
+                                    // Fade in
+                                    setTimeout(() => {
+                                        imgMilieu.style.opacity = '1';
+                                    }, 50);
+                                }, 200);
+                            }
+                            carteMilieu.setAttribute('data-jeu-index', indexFond);
+                        }
+                    }
+                }
+            }
+            
+            function changerJeu(nouvelIndex) {
+                // Animation de fade out
+                const content = document.getElementById('jeu-content');
+                const image = document.getElementById('jeu-image');
+                const titre = document.getElementById('jeu-titre');
+                const description = document.getElementById('jeu-description');
+                
+                if (content && image && nouvelIndex !== currentJeuIndex) {
+                    // Désactiver les transitions pendant le changement pour éviter les effets indésirables
+                    content.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    image.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    // Fade out avec translation
+                    content.style.opacity = '0';
+                    content.style.transform = 'translateY(-15px)';
+                    image.style.opacity = '0';
+                    image.style.transform = 'scale(0.95) translateY(10px)';
+                    if (titre) titre.style.opacity = '0';
+                    if (description) description.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        // Changer le jeu
+                        currentJeuIndex = nouvelIndex;
+                        const jeu = jeuxData[currentJeuIndex];
+                        
+                        // Mettre à jour le contenu
+                        if (titre) titre.textContent = jeu.nom;
+                        if (description) description.textContent = jeu.description;
+                        image.src = jeu.image;
+                        image.alt = jeu.nom;
+                        
+                        // Mettre à jour les cartes avec transition
+                        updateCartes();
+                        
+                        // Réinitialiser les positions pour le fade in
+                        content.style.transform = 'translateY(15px)';
+                        image.style.transform = 'scale(0.95) translateY(-10px)';
+                        
+                        // Réactiver les transitions pour le fade in
+                        setTimeout(() => {
+                            content.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                            image.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                            
+                            // Fade in avec animation fluide
+                            content.style.opacity = '1';
+                            content.style.transform = 'translateY(0)';
+                            image.style.opacity = '1';
+                            image.style.transform = 'scale(1) translateY(0)';
+                            if (titre) titre.style.opacity = '1';
+                            if (description) description.style.opacity = '1';
+                        }, 10);
+                    }, 400);
+                }
+            }
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                const carteFond = document.getElementById('carte-fond');
+                const carteMilieu = document.getElementById('carte-milieu');
+                
+                if (carteFond) {
+                    carteFond.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-jeu-index'));
+                        changerJeu(index);
+                    });
+                }
+                
+                if (carteMilieu) {
+                    carteMilieu.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-jeu-index'));
+                        changerJeu(index);
+                    });
+                }
+                
+                // Initialiser les cartes
+                updateCartes();
+            });
+        </script>
+    @endif
 
     <script>
         (function() {

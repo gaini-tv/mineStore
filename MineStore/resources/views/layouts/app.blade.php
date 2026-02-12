@@ -31,6 +31,9 @@
         @yield('content')
     </main>
 
+    {{-- Footer --}}
+    @include('partials.footer')
+
     {{-- Scripts --}}
     @stack('scripts')
 </body>

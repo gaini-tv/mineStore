@@ -3,7 +3,7 @@
 @section('title', 'Recherche : ' . ($query ?: 'produits'))
 
 @section('content')
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-8" style="padding-top: 200px;">
         <h1 class="text-2xl font-bold text-[#1b1b18] mb-6">
             @if($query)
                 Résultats pour « {{ $query }} »
@@ -24,7 +24,8 @@
                         'name' => $produit->nom,
                         'description' => $produit->description ?? '',
                         'price' => number_format($produit->prix ?? 0, 2, ',', ' '),
-                        'image' => $produit->image ?? asset('images/placeholder-product.png')
+                        'image' => $produit->image ?? asset('images/placeholder-product.png'),
+                        'productId' => $produit->id_produit
                     ])
                 @endforeach
             </div>
