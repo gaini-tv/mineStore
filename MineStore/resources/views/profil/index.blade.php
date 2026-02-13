@@ -2,8 +2,14 @@
 
 @section('title', 'Mon profil')
 
+@push('styles')
+<style>
+    .profil-field-group { margin-top: 10px; margin-bottom: 10px; }
+</style>
+@endpush
+
 @section('content')
-    <div class="container mx-auto px-4 py-8" style="padding-top: 200px;">
+    <div class="container mx-auto px-4 py-8" style="padding-top: 200px; margin-top: 20px; margin-bottom: 20px;">
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 max-w-4xl mx-auto">
                 {{ session('success') }}
@@ -81,7 +87,7 @@
 
                 {{-- Modal de modification du mot de passe --}}
                 <div id="password-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full" style="padding: 20px;">
+                    <div class="bg-white rounded-lg shadow-lg p-6" style="padding: 20px; width: 600px;">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Modifier mon mot de passe</h2>
                             <button onclick="document.getElementById('password-modal').classList.add('hidden')" class="cursor-pointer">
@@ -91,7 +97,7 @@
                         <form method="POST" action="{{ route('profil.updatePassword') }}" class="space-y-4">
                             @csrf
                             
-                            <div>
+                            <div class="profil-field-group">
                                 <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe actuel</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 
@@ -103,7 +109,7 @@
                                 </div>
                             </div>
                             
-                            <div>
+                            <div class="profil-field-group">
                                 <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nouveau mot de passe</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 
@@ -116,7 +122,7 @@
                                 </div>
                             </div>
                             
-                            <div>
+                            <div class="profil-field-group">
                                 <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Confirmer le nouveau mot de passe</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 
@@ -136,7 +142,7 @@
                                 <p class="text-red-500 text-sm">{{ $message }}</p>
                             @enderror
                             
-                            <div class="flex justify-end gap-4 mt-4">
+                            <div class="flex justify-end gap-4 mt-4" style="display: flex; align-items: center; justify-content: center; align-content: center; flex-wrap: nowrap; flex-direction: column;">
                                 <button type="button" 
                                         onclick="document.getElementById('password-modal').classList.add('hidden')" 
                                         class="px-6 py-2 bg-gray-200 text-[#1b1b18] rounded-lg font-bold hover:bg-gray-300 transition-colors" 
@@ -195,7 +201,7 @@
                                 @csrf
                                 <input type="hidden" name="avatar" id="selected-avatar" value="{{ auth()->user()->avatar ?? 'base.png' }}">
                                 
-                                <div>
+                                <div class="profil-field-group">
                                     <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom</label>
                                     <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                         <input type="text" 
@@ -207,7 +213,7 @@
                                     </div>
                                 </div>
                                 
-                                <div>
+                                <div class="profil-field-group">
                                     <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email</label>
                                     <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                         <input type="email" 
@@ -292,7 +298,7 @@
                         <form method="POST" action="{{ route('login.post') }}" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; row-gap: 20px;">
                             @csrf
                             
-                            <div class="mb-4">
+                            <div class="mb-4 profil-field-group">
                                 <label for="login-email" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="email" 
@@ -306,7 +312,7 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
+                            <div class="mb-4 profil-field-group">
                                 <label for="login-password" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 
@@ -361,7 +367,7 @@
                         <form method="POST" action="{{ route('register.post') }}" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; row-gap: 20px;">
                             @csrf
                             
-                            <div class="mb-4">
+                            <div class="mb-4 profil-field-group">
                                 <label for="register-name" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="text" 
@@ -375,7 +381,7 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
+                            <div class="mb-4 profil-field-group">
                                 <label for="register-email" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="email" 
@@ -389,7 +395,7 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
+                            <div class="mb-4 profil-field-group">
                                 <label for="register-password" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 
@@ -404,7 +410,7 @@
                                 <p class="text-xs text-[#706f6c] mt-1" style="font-family: 'Minecrafter Alt', sans-serif;">Minimum 8 caractères</p>
                             </div>
                             
-                            <div class="mb-6">
+                            <div class="mb-6 profil-field-group">
                                 <label for="register-password-confirm" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Confirmer le mot de passe</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="password" 

@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="{{ asset('css/fallback.css') }}">
         <script src="{{ asset('js/app.js') }}"></script>
     @endif
+    @stack('styles')
 </head>
 <body class="bg-white text-[#1b1b18] min-h-screen flex flex-col">
     {{-- Navbar --}}
