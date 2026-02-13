@@ -68,6 +68,14 @@
                                 </div>
                             @endforeach
                         </div>
+                        <div class="flex justify-end mt-6">
+                            <button type="button" id="avatar-save-btn" class="relative" style="display: inline-block; width: 200px;">
+                                <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                <span class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 text-white font-bold text-base md:text-lg pointer-events-none" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                    Enregistrer
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -156,8 +164,9 @@
                     <div style="width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center;">
                         <div class="relative">
                             @php
-                                $defaultAvatar = asset('images/avatar/base.png');
-                                $currentAvatar = auth()->user()->avatar ? asset('images/avatar/' . auth()->user()->avatar) : $defaultAvatar;
+                                $avatarFile = auth()->user()->avatar ?? 'base.png';
+                                $currentAvatar = asset('images/avatar/' . $avatarFile);
+                                $currentAvatar .= (auth()->user()->updated_at ? '?v=' . auth()->user()->updated_at->timestamp : '');
                             @endphp
                             <img src="{{ $currentAvatar }}" 
                                  alt="Avatar" 
@@ -432,6 +441,13 @@
     
     @push('scripts')
     <script>
+        // Éviter que le navigateur réaffiche l’ancienne page en cache après enregistrement (avatar, etc.)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
         // Basculer entre connexion et inscription
         document.getElementById('show-register')?.addEventListener('click', function(e) {
             e.preventDefault();
@@ -482,26 +498,46 @@
                     opt.classList.remove('border-[#5baa47]');
                     opt.style.border = 'none';
                 });
-                // Sélectionner le nouvel avatar
+                // Sélectionner le nouvel avatar (sans soumettre)
                 this.classList.add('border-[#5baa47]');
                 this.style.border = '2px solid #5baa47';
                 selectedAvatar = this.getAttribute('data-avatar');
                 selectedAvatarInput.value = selectedAvatar;
-                
-                // Mettre à jour l'image de l'avatar actuel
+                // Mettre à jour l'aperçu dans la modal uniquement
                 if (currentAvatarImg) {
                     currentAvatarImg.src = '{{ asset("images/avatar") }}/' + selectedAvatar;
                 }
-                
-                // Appliquer directement en soumettant le formulaire
-                const form = document.querySelector('form[action*="profil/update"]');
-                if (form) {
-                    // Fermer la modal
-                    document.getElementById('avatar-modal').classList.add('hidden');
-                    // Soumettre le formulaire
-                    form.submit();
-                }
             });
+        });
+
+        // Bouton Enregistrer dans le popup avatar : envoi AJAX (pas de redirection = pas de bug de cache)
+        document.getElementById('avatar-save-btn')?.addEventListener('click', function() {
+            const btn = this;
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!token) return;
+            btn.disabled = true;
+            fetch('{{ route("profil.updateAvatar") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ avatar: selectedAvatar, _token: token })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success && data.avatar_url) {
+                    selectedAvatarInput.value = data.avatar;
+                    if (currentAvatarImg) currentAvatarImg.src = data.avatar_url;
+                    var navAvatar = document.getElementById('navbar-avatar');
+                    if (navAvatar) navAvatar.src = data.avatar_url;
+                    document.getElementById('avatar-modal').classList.add('hidden');
+                }
+            })
+            .catch(function() { })
+            .finally(function() { btn.disabled = false; });
         });
         
         // Fermer la modal en cliquant sur le fond

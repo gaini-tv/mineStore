@@ -36,12 +36,15 @@
                 @if (auth()->check())
                     <div class="relative" id="profile-dropdown">
                         @php
-                            $userAvatar = auth()->user()->avatar ? asset('images/avatar/' . auth()->user()->avatar) : asset('images/avatar/base.png');
+                            $avatarFile = auth()->user()->avatar ?: 'base.png';
+                            $userAvatar = asset('images/avatar/' . $avatarFile);
+                            $userAvatar .= (auth()->user()->updated_at ? '?v=' . auth()->user()->updated_at->timestamp : '');
                         @endphp
                         <button id="profile-toggle" class="navbar-link transition-all duration-300 px-2 py-1 flex items-center gap-2">
                             <div class="w-10 h-10 rounded border-2 border-white overflow-hidden flex-shrink-0" style="aspect-ratio: 1/1;">
                                 <img src="{{ $userAvatar }}" 
                                      alt="Avatar" 
+                                     id="navbar-avatar"
                                      class="w-full h-full"
                                      style="object-fit: contain;">
                             </div>

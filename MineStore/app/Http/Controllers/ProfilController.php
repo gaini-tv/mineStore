@@ -14,7 +14,11 @@ class ProfilController extends Controller
      */
     public function index()
     {
-        return view('profil.index');
+        return response()
+            ->view('profil.index')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     /**
@@ -30,13 +34,49 @@ class ProfilController extends Controller
             'avatar' => 'nullable|string|max:255',
         ]);
 
+        $avatar = isset($validated['avatar']) && $validated['avatar'] !== '' ? $validated['avatar'] : $user->avatar;
+
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'avatar' => $validated['avatar'] ?? $user->avatar,
+            'avatar' => $avatar,
         ]);
 
-        return redirect()->route('profil.index')->with('success', 'Profil mis à jour avec succès !');
+        // Recharger l'utilisateur depuis la BDD et mettre à jour la session
+        $user->refresh();
+        Auth::setUser($user);
+        request()->session()->save();
+
+        return redirect()
+            ->route('profil.index', ['_t' => now()->timestamp])
+            ->with('success', 'Profil mis à jour avec succès !')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
+    }
+
+    /**
+     * Met à jour uniquement l'avatar (appel AJAX, pas de redirection)
+     */
+    public function updateAvatar(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'avatar' => 'required|string|max:255',
+        ]);
+
+        $user->update(['avatar' => $validated['avatar']]);
+        $user->refresh();
+        Auth::setUser($user);
+        request()->session()->save();
+
+        $avatarUrl = asset('images/avatar/' . $user->avatar) . '?v=' . $user->updated_at->timestamp;
+
+        return response()->json([
+            'success' => true,
+            'avatar' => $user->avatar,
+            'avatar_url' => $avatarUrl,
+        ]);
     }
 
     /**

@@ -28,6 +28,7 @@ Route::get('/blog', function () {
 // Route profil
 Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
 Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
+Route::post('/profil/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.updateAvatar');
 Route::post('/profil/updatePassword', [ProfilController::class, 'updatePassword'])->name('profil.updatePassword');
 
 // Routes d'authentification
