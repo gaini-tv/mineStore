@@ -12,10 +12,259 @@
         
         @auth
             {{-- Contenu pour utilisateur connecté --}}
-            <h1 class="text-3xl font-bold text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</h1>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <p class="text-[#706f6c] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Bienvenue, {{ auth()->user()->name }}!</p>
-                <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">Informations du profil à venir...</p>
+            <div class="max-w-4xl mx-auto">
+                {{-- Modal de sélection d'avatar --}}
+                <div id="avatar-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" style="padding: 20px;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Choisir un avatar</h2>
+                            <button onclick="document.getElementById('avatar-modal').classList.add('hidden')" class="cursor-pointer">
+                                <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                            </button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;">
+                            @php
+                                $avatarFiles = [
+                                    'base.png',
+                                    'Plan de travail 1 copie 2.png',
+                                    'Plan de travail 1 copie 3.png',
+                                    'Plan de travail 1 copie 4.png',
+                                    'Plan de travail 1 copie 5.png',
+                                    'Plan de travail 1 copie 6-1.png',
+                                    'Plan de travail 1 copie 6-2.png',
+                                    'Plan de travail 1 copie 6-3.png',
+                                    'Plan de travail 1 copie 6-4.png',
+                                    'Plan de travail 1 copie 6-5.png',
+                                    'Plan de travail 1 copie 6.png',
+                                    'Plan de travail 1 copie 7-1.png',
+                                    'Plan de travail 1 copie 7-2.png',
+                                    'Plan de travail 1 copie 7-3.png',
+                                    'Plan de travail 1 copie 7-4.png',
+                                    'Plan de travail 1 copie 7-5.png',
+                                    'Plan de travail 1 copie 7.png',
+                                    'Plan de travail 1 copie 8-1.png',
+                                    'Plan de travail 1 copie 8-2.png',
+                                    'Plan de travail 1 copie 8-3.png',
+                                    'Plan de travail 1 copie 8-4.png',
+                                    'Plan de travail 1 copie 8-5.png',
+                                    'Plan de travail 1 copie 8.png',
+                                    'Plan de travail 1 copie 9-1.png',
+                                    'Plan de travail 1 copie 9-2.png',
+                                    'Plan de travail 1 copie 9-3.png',
+                                    'Plan de travail 1 copie 9-4.png',
+                                    'Plan de travail 1 copie 9.png',
+                                    'Plan de travail 1 copie.png',
+                                    'Plan de travail 1.png',
+                                ];
+                                $userAvatar = auth()->user()->avatar ?? 'base.png';
+                            @endphp
+                            @foreach($avatarFiles as $index => $avatarFile)
+                                <div class="avatar-option cursor-pointer rounded-lg p-1 transition-all {{ $userAvatar == $avatarFile ? 'border-2 border-[#5baa47]' : '' }}"
+                                     data-avatar="{{ $avatarFile }}"
+                                     style="width: 100%; aspect-ratio: 1/1; {{ $userAvatar == $avatarFile ? 'border: 2px solid #5baa47;' : 'border: none;' }}">
+                                    <div class="w-full h-full overflow-hidden rounded" style="width: 100%; height: 100%;">
+                                        <img src="{{ asset('images/avatar/' . $avatarFile) }}" alt="Avatar {{ $index + 1 }}" class="w-full h-full object-contain">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Modal de modification du mot de passe --}}
+                <div id="password-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full" style="padding: 20px;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Modifier mon mot de passe</h2>
+                            <button onclick="document.getElementById('password-modal').classList.add('hidden')" class="cursor-pointer">
+                                <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                            </button>
+                        </div>
+                        <form method="POST" action="{{ route('profil.updatePassword') }}" class="space-y-4">
+                            @csrf
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe actuel</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="password" 
+                                           name="current_password" 
+                                           required 
+                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           placeholder="Votre mot de passe actuel">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nouveau mot de passe</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="password" 
+                                           name="password" 
+                                           required 
+                                           minlength="8"
+                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           placeholder="Nouveau mot de passe">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Confirmer le nouveau mot de passe</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="password" 
+                                           name="password_confirmation" 
+                                           required 
+                                           minlength="8"
+                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           placeholder="Confirmer le nouveau mot de passe">
+                                </div>
+                            </div>
+                            
+                            @error('current_password')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                            @error('password')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="flex justify-end gap-4 mt-4">
+                                <button type="button" 
+                                        onclick="document.getElementById('password-modal').classList.add('hidden')" 
+                                        class="px-6 py-2 bg-gray-200 text-[#1b1b18] rounded-lg font-bold hover:bg-gray-300 transition-colors" 
+                                        style="font-family: 'Minecrafter Alt', sans-serif;">
+                                    Annuler
+                                </button>
+                                <div class="relative" style="display: inline-block; width: 200px;">
+                                    <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                    <button type="submit"
+                                            class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                            style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                        <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                            Modifier
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Section principale avec flex : Avatar/Nom à gauche, Informations à droite --}}
+                <div style="width: 100%; display: flex; flex-direction: row; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; margin-bottom: 24px;">
+                    {{-- Section gauche : Avatar et nom --}}
+                    <div style="width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center;">
+                        <div class="relative">
+                            @php
+                                $defaultAvatar = asset('images/avatar/base.png');
+                                $currentAvatar = auth()->user()->avatar ? asset('images/avatar/' . auth()->user()->avatar) : $defaultAvatar;
+                            @endphp
+                            <img src="{{ $currentAvatar }}" 
+                                 alt="Avatar" 
+                                 id="current-avatar"
+                                 class="w-20 h-20 rounded-full border-4 border-[#5baa47] cursor-pointer hover:opacity-80 transition-opacity"
+                                 style="object-fit: cover;"
+                                 onclick="document.getElementById('avatar-modal').classList.remove('hidden')">
+                            <button onclick="document.getElementById('avatar-modal').classList.remove('hidden')" 
+                                    class="absolute bottom-0 right-0 bg-[#5baa47] text-white rounded-full p-1 border-2 border-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <h1 class="text-3xl font-bold text-[#1b1b18] mt-4" style="font-family: 'Minecrafter Alt', sans-serif;">
+                            {{ auth()->user()->name }}
+                        </h1>
+                    </div>
+                    
+                    {{-- Section droite : Mes informations --}}
+                    <div style="width: 50%;">
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h2 class="text-2xl font-bold text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Mes informations</h2>
+                            
+                            <form method="POST" action="{{ route('profil.update') }}" class="space-y-4" style="margin-bottom: 20px;">
+                                @csrf
+                                <input type="hidden" name="avatar" id="selected-avatar" value="{{ auth()->user()->avatar ?? 'base.png' }}">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom</label>
+                                    <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                        <input type="text" 
+                                               name="name" 
+                                               value="{{ auth()->user()->name }}"
+                                               required 
+                                               class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                               style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email</label>
+                                    <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                        <input type="email" 
+                                               name="email" 
+                                               value="{{ auth()->user()->email }}"
+                                               required 
+                                               class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                               style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                                    </div>
+                                </div>
+                                
+                                @error('name')
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @enderror
+                                @error('email')
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @enderror
+                                
+                                <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                                    <div class="relative" style="display: inline-block; width: 200px;">
+                                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                        <button type="submit"
+                                                class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                                style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                            <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                                Enregistrer
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <div class="relative" style="display: inline-block; width: 200px;">
+                                            <img src="{{ asset('images/btnESP.png') }}" alt="" class="w-full h-auto block">
+                                            <button type="submit"
+                                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                                <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                                    Déconnexion
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </form>
+                            
+                            {{-- Lien pour modifier le mot de passe --}}
+                            <div style="margin-top: 20px; text-align: center;">
+                                <a href="#" onclick="document.getElementById('password-modal').classList.remove('hidden'); return false;" 
+                                   class="text-[#5baa47] hover:underline font-bold" 
+                                   style="font-family: 'Minecrafter Alt', sans-serif; cursor: pointer;">
+                                    Modifier mon mot de passe
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Section Mes commandes séparée --}}
+                <div style="width: 100%; margin-top: 24px;">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-2xl font-bold text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Mes commandes</h2>
+                        <div class="text-center py-8">
+                            <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">Aucune commande pour le moment.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         @else
             {{-- Formulaires pour utilisateur non connecté --}}
@@ -201,6 +450,74 @@
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('register-form').classList.remove('hidden');
         @endif
+        
+        // Gestion de la sélection d'avatar
+        @auth
+        let selectedAvatar = '{{ auth()->user()->avatar ?? "base.png" }}';
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        const selectedAvatarInput = document.getElementById('selected-avatar');
+        const currentAvatarImg = document.getElementById('current-avatar');
+        
+        // Marquer l'avatar actuel comme sélectionné
+        if (selectedAvatar) {
+            avatarOptions.forEach(option => {
+                if (option.getAttribute('data-avatar') === selectedAvatar) {
+                    option.classList.add('border-[#5baa47]');
+                    option.style.border = '2px solid #5baa47';
+                } else {
+                    option.style.border = 'none';
+                }
+            });
+        } else {
+            // Aucun avatar sélectionné, retirer tous les borders
+            avatarOptions.forEach(option => {
+                option.style.border = 'none';
+            });
+        }
+        
+        avatarOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Retirer la sélection précédente
+                avatarOptions.forEach(opt => {
+                    opt.classList.remove('border-[#5baa47]');
+                    opt.style.border = 'none';
+                });
+                // Sélectionner le nouvel avatar
+                this.classList.add('border-[#5baa47]');
+                this.style.border = '2px solid #5baa47';
+                selectedAvatar = this.getAttribute('data-avatar');
+                selectedAvatarInput.value = selectedAvatar;
+                
+                // Mettre à jour l'image de l'avatar actuel
+                if (currentAvatarImg) {
+                    currentAvatarImg.src = '{{ asset("images/avatar") }}/' + selectedAvatar;
+                }
+                
+                // Appliquer directement en soumettant le formulaire
+                const form = document.querySelector('form[action*="profil/update"]');
+                if (form) {
+                    // Fermer la modal
+                    document.getElementById('avatar-modal').classList.add('hidden');
+                    // Soumettre le formulaire
+                    form.submit();
+                }
+            });
+        });
+        
+        // Fermer la modal en cliquant sur le fond
+        document.getElementById('avatar-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Fermer la modal de mot de passe en cliquant sur le fond
+        document.getElementById('password-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        @endauth
     </script>
     @endpush
 @endsection

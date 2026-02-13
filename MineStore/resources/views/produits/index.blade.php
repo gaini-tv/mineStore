@@ -24,15 +24,17 @@
 
         {{-- Popup de filtrage --}}
         <div id="filter-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" style="border: 10px solid #5baa47;">
+                <div class="flex justify-between items-center mb-4" style="display: flex; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; flex-direction: column-reverse;">
                     <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Filtrer les produits</h2>
-                    <button id="close-filter-btn" class="text-[#706f6c] hover:text-[#1b1b18] text-2xl font-bold">&times;</button>
+                    <button id="close-filter-btn" class="cursor-pointer hover:opacity-80 transition-opacity">
+                        <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                    </button>
                 </div>
                 
-                <form method="GET" action="{{ route('produits.index') }}" class="space-y-4">
+                <form method="GET" action="{{ route('produits.index') }}" class="space-y-4" style="display: flex; flex-direction: column; ">
                     {{-- Recherche par nom --}}
-                    <div>
+                    <div style="padding: 20px;">
                         <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Rechercher un produit</label>
                         <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                             <input type="text" 
@@ -45,7 +47,7 @@
                     </div>
 
                     {{-- Filtre par prix --}}
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
                         <div>
                             <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Prix min (€)</label>
                             <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
@@ -74,52 +76,32 @@
                         </div>
                     </div>
 
-                    {{-- Filtre par stock --}}
-                    <div>
-                        <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">État du stock</label>
-                        <select name="stock" class="w-full px-4 py-2 border border-[#e3e3e0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5baa47]" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            <option value="">Tous</option>
-                            <option value="en_stock" {{ request('stock') == 'en_stock' ? 'selected' : '' }}>En stock (>10)</option>
-                            <option value="stock_faible" {{ request('stock') == 'stock_faible' ? 'selected' : '' }}>Stock faible (1-10)</option>
-                            <option value="rupture" {{ request('stock') == 'rupture' ? 'selected' : '' }}>Rupture de stock</option>
-                        </select>
-                    </div>
-
-                    {{-- Filtre par PEGI --}}
-                    <div>
-                        <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">PEGI</label>
-                        <select name="pegi" class="w-full px-4 py-2 border border-[#e3e3e0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5baa47]" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            <option value="">Tous</option>
-                            <option value="3" {{ request('pegi') == '3' ? 'selected' : '' }}>PEGI 3</option>
-                            <option value="7" {{ request('pegi') == '7' ? 'selected' : '' }}>PEGI 7</option>
-                            <option value="12" {{ request('pegi') == '12' ? 'selected' : '' }}>PEGI 12</option>
-                            <option value="16" {{ request('pegi') == '16' ? 'selected' : '' }}>PEGI 16</option>
-                            <option value="18" {{ request('pegi') == '18' ? 'selected' : '' }}>PEGI 18</option>
-                        </select>
-                    </div>
-
                     {{-- Tri --}}
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
                         <div>
                             <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Trier par</label>
-                            <select name="sort" class="w-full px-4 py-2 border border-[#e3e3e0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5baa47]" style="font-family: 'Minecrafter Alt', sans-serif;">
-                                <option value="nom" {{ request('sort') == 'nom' ? 'selected' : '' }}>Nom</option>
-                                <option value="prix" {{ request('sort') == 'prix' ? 'selected' : '' }}>Prix</option>
-                                <option value="date" {{ request('sort') == 'date' ? 'selected' : '' }}>Date de création</option>
-                                <option value="stock" {{ request('sort') == 'stock' ? 'selected' : '' }}>Stock</option>
-                            </select>
+                            <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                <select name="sort" class="w-full px-3 py-2 border-0 bg-transparent text-white focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                                    <option value="nom" {{ request('sort') == 'nom' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Nom</option>
+                                    <option value="prix" {{ request('sort') == 'prix' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Prix</option>
+                                    <option value="date" {{ request('sort') == 'date' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Date de création</option>
+                                    <option value="stock" {{ request('sort') == 'stock' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Stock</option>
+                                </select>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Ordre</label>
-                            <select name="order" class="w-full px-4 py-2 border border-[#e3e3e0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5baa47]" style="font-family: 'Minecrafter Alt', sans-serif;">
-                                <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Croissant</option>
-                                <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Décroissant</option>
-                            </select>
+                            <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                <select name="order" class="w-full px-3 py-2 border-0 bg-transparent text-white focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                                    <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Croissant</option>
+                                    <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }} style="background: #1b1b18; color: white;">Décroissant</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Boutons --}}
-                    <div class="flex gap-4 pt-4">
+                    <div class="flex gap-4 pt-4" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; padding: 20px; row-gap: 20px;">
                         <div class="relative mx-auto" style="display: inline-block; width: 200px;">
                             <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
                             <button type="submit"
@@ -130,8 +112,8 @@
                                 </span>
                             </button>
                         </div>
-                        <a href="{{ route('produits.index') }}" class="px-6 py-3 bg-gray-200 text-[#1b1b18] rounded-lg font-bold hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            Réinitialiser
+                        <a href="{{ route('produits.index') }}" class="px-6 py-3 bg-gray-200 rounded-lg font-bold transition-colors duration-200 flex items-center justify-center hover:text-[#5baa47]" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
+                            Reinitialiser
                         </a>
                     </div>
                 </form>

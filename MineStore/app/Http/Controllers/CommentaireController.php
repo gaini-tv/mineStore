@@ -17,20 +17,30 @@ class CommentaireController extends Controller
         $request->validate([
             'contenu' => 'required|string|max:1000',
             'note' => 'required|integer|min:1|max:5',
+        ], [
+            'note.required' => 'Veuillez sélectionner une note en cliquant sur les étoiles.',
+            'note.min' => 'La note doit être au moins 1.',
+            'note.max' => 'La note ne peut pas dépasser 5.',
+            'contenu.required' => 'Veuillez écrire un commentaire.',
         ]);
 
         $produit = Produit::where('id_produit', $produitId)
             ->where('actif', true)
             ->firstOrFail();
 
-        // Utiliser l'utilisateur connecté ou un utilisateur par défaut (pour les tests)
-        $userId = Auth::id() ?? 1; // À adapter selon votre système d'authentification
+        // Utiliser l'utilisateur connecté ou créer un utilisateur anonyme
+        $userId = Auth::id();
+        
+        // Si l'utilisateur n'est pas connecté, utiliser l'ID 1 ou créer un utilisateur par défaut
+        if (!$userId) {
+            $userId = 1; // Utilisateur par défaut
+        }
 
-        Commentaire::create([
+        $commentaire = Commentaire::create([
             'contenu' => $request->contenu,
             'note' => $request->note,
             'date_' => now(),
-            'statut' => 'approuvé', // ou 'en_attente' selon votre logique
+            'statut' => 'approuvé',
             'user_id' => $userId,
             'produit_id' => $produit->id_produit,
         ]);

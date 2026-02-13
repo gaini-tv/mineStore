@@ -88,6 +88,12 @@
             <h2 class="text-3xl font-bold text-white mb-6" style="font-family: 'Minecrafter Alt', sans-serif; padding-bottom: 30px; padding-top: 30px; align-items: center; display: flex; justify-content: center; align-content: center; flex-wrap: nowrap; flex-direction: row; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">
                 Commentaires
             </h2>
+            
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             {{-- Formulaire d'ajout de commentaire --}}
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -110,7 +116,10 @@
                 <form action="{{ route('commentaires.store', $produit->id_produit) }}" method="POST">
                     @csrf
                     <input type="hidden" name="note" id="note-value" value="" required>
-                    <p class="text-red-500 text-sm mt-1 hidden" id="note-error">Veuillez sélectionner une note</p>
+                    <p class="text-red-500 text-sm mt-1 hidden" id="note-error">Veuillez sélectionner une note en cliquant sur les étoiles.</p>
+                    @error('note')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
 
                     {{-- Commentaire --}}
                     <div class="mb-4">
@@ -127,50 +136,90 @@
                     </div>
 
                     {{-- Bouton soumettre --}}
-                    <button type="submit" 
-                            class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
-                            style="font-family: 'Minecrafter Alt', sans-serif;">
-                        Publier le commentaire
-                    </button>
+                    <div class="relative" style="display: inline-block; width: 200px;">
+                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block" id="btn-image">
+                        <button type="submit" id="submit-comment-btn"
+                                class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                style="background: transparent; border: none; cursor: not-allowed; padding: 0; opacity: 0.5;" disabled>
+                            <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                Envoyer
+                            </span>
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            {{-- Liste des commentaires --}}
-            @if(isset($commentaires) && $commentaires->count() > 0)
-                <div class="space-y-6">
-                    @foreach($commentaires as $commentaire)
-                        <div class="bg-white rounded-lg shadow-md p-6">
-                            <div class="flex items-start justify-between mb-3">
-                                <div>
-                                    <h4 class="text-lg font-bold" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
-                                        {{ $commentaire->user->name ?? 'Utilisateur anonyme' }}
-                                    </h4>
-                                    <p class="text-sm text-gray-500">
-                                        {{ $commentaire->date_->format('d/m/Y à H:i') }}
+            {{-- Section commentaires avec menu déroulant --}}
+            <div class="bg-white rounded-lg shadow-md mb-8">
+                {{-- En-tête cliquable --}}
+                <button id="toggle-comments" class="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors" style="font-family: 'Minecrafter Alt', sans-serif;">
+                    <h3 class="text-xl font-bold text-[#1b1b18]">
+                        Commentaires ({{ $commentaires && $commentaires->count() > 0 ? $commentaires->count() : 0 }})
+                    </h3>
+                    <svg id="arrow-icon" class="w-6 h-6 text-[#1b1b18] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                
+                {{-- Contenu des commentaires (masqué par défaut) --}}
+                <div id="comments-content" class="hidden">
+                    @if($commentaires && $commentaires->count() > 0)
+                        <div class="px-6 pb-6" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 20px; {{ $commentaires->count() > 3 ? 'max-height: 600px; overflow-y: auto;' : '' }}">
+                            @foreach($commentaires as $index => $commentaire)
+                                <div class="bg-gray-50 rounded-lg p-6 w-full" style="{{ $index < $commentaires->count() - 1 ? 'border-bottom: 2px solid #e3e3e0; padding-bottom: 20px;' : '' }}">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-start gap-4 flex-1">
+                                            {{-- Avatar à gauche --}}
+                                            @php
+                                                $userAvatar = $commentaire->user && $commentaire->user->avatar 
+                                                    ? asset('images/avatar/' . $commentaire->user->avatar) 
+                                                    : asset('images/avatar/base.png');
+                                            @endphp
+                                            <div class="w-16 h-16 rounded border-2 border-[#5baa47] overflow-hidden flex-shrink-0" style="aspect-ratio: 1/1;">
+                                                <img src="{{ $userAvatar }}" 
+                                                     alt="Avatar" 
+                                                     class="w-full h-full"
+                                                     style="object-fit: contain;">
+                                            </div>
+                                            {{-- Nom et email à droite de l'avatar --}}
+                                            <div class="flex-1">
+                                                <h4 class="text-lg font-bold" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
+                                                    {{ $commentaire->user->name ?? 'Utilisateur anonyme' }}
+                                                </h4>
+                                                @if($commentaire->user && $commentaire->user->email)
+                                                    <p class="text-sm text-gray-500" style="font-family: 'Minecrafter Alt', sans-serif;">
+                                                        {{ $commentaire->user->email }}
+                                                    </p>
+                                                @endif
+                                                <p class="text-sm text-gray-500">
+                                                    {{ $commentaire->date_->format('d/m/Y à H:i') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {{-- Affichage des étoiles --}}
+                                        <div class="flex gap-1 items-center ml-4">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
+                                                     alt="Étoile" 
+                                                     style="opacity: {{ $i <= ($commentaire->note ?? 0) ? '1.0' : '0.3' }}; width: 40px; height: 40px;">
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-700" style="text-align: justify;">
+                                        {{ $commentaire->contenu }}
                                     </p>
                                 </div>
-                                {{-- Affichage des étoiles --}}
-                                <div class="flex gap-1 items-center">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
-                                             alt="Étoile" 
-                                             style="opacity: {{ $i <= ($commentaire->note ?? 0) ? '1.0' : '0.3' }}; width: 40px; height: 40px;">
-                                    @endfor
-                                </div>
-                            </div>
-                            <p class="text-gray-700" style="text-align: justify;">
-                                {{ $commentaire->contenu }}
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="px-6 pb-6 text-center">
+                            <p class="text-gray-500" style="font-family: 'Minecrafter Alt', sans-serif;">
+                                Aucun commentaire pour le moment. Soyez le premier à commenter !
                             </p>
                         </div>
-                    @endforeach
+                    @endif
                 </div>
-            @else
-                <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                    <p class="text-gray-500" style="font-family: 'Minecrafter Alt', sans-serif;">
-                        Aucun commentaire pour le moment. Soyez le premier à commenter !
-                    </p>
-                </div>
-            @endif
+            </div>
         </div>
 
         {{-- Section Sélectionné pour vous --}}
@@ -238,13 +287,70 @@
             }
 
             // Validation du formulaire
-            const form = document.querySelector('form');
+            const form = document.querySelector('form[action*="commentaires"]');
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    if (!noteInput.value || noteInput.value === '') {
+                    const noteValue = noteInput.value;
+                    if (!noteValue || noteValue === '' || noteValue === '0' || parseInt(noteValue) < 1 || parseInt(noteValue) > 5) {
                         e.preventDefault();
+                        e.stopPropagation();
                         noteError.classList.remove('hidden');
+                        noteError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         return false;
+                    }
+                    noteError.classList.add('hidden');
+                });
+            }
+            
+            // Désactiver le bouton si aucune note n'est sélectionnée
+            const submitButton = document.getElementById('submit-comment-btn');
+            const btnImage = document.getElementById('btn-image');
+            
+            function updateSubmitButton() {
+                const noteValue = noteInput.value;
+                if (submitButton && btnImage) {
+                    if (!noteValue || noteValue === '' || noteValue === '0' || parseInt(noteValue) < 1 || parseInt(noteValue) > 5) {
+                        submitButton.style.opacity = '0.5';
+                        submitButton.style.cursor = 'not-allowed';
+                        submitButton.disabled = true;
+                        btnImage.style.opacity = '0.5';
+                    } else {
+                        submitButton.style.opacity = '1';
+                        submitButton.style.cursor = 'pointer';
+                        submitButton.disabled = false;
+                        btnImage.style.opacity = '1';
+                    }
+                }
+            }
+            
+            // Vérifier au chargement et à chaque changement
+            updateSubmitButton();
+            noteInput.addEventListener('change', updateSubmitButton);
+            
+            // Mettre à jour quand une étoile est cliquée
+            starButtons.forEach((button) => {
+                button.addEventListener('click', function() {
+                    setTimeout(updateSubmitButton, 100);
+                });
+            });
+        });
+        
+        // Gestion du menu déroulant des commentaires
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-comments');
+            const commentsContent = document.getElementById('comments-content');
+            const arrowIcon = document.getElementById('arrow-icon');
+            
+            if (toggleButton && commentsContent && arrowIcon) {
+                toggleButton.addEventListener('click', function() {
+                    const isHidden = commentsContent.classList.contains('hidden');
+                    
+                    if (isHidden) {
+                        commentsContent.classList.remove('hidden');
+                        arrowIcon.style.transform = 'rotate(90deg)';
+                    } else {
+                        commentsContent.classList.add('hidden');
+                        arrowIcon.style.transform = 'rotate(0deg)';
                     }
                 });
             }

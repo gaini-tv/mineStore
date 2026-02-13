@@ -75,13 +75,13 @@
                         {{-- Bouton En savoir plus --}}
                         <div class="relative" style="display: inline-block; width: 200px;">
                             <img src="{{ asset('images/btnESP.png') }}" alt="" class="w-full h-auto block">
-                            <button type="button"
-                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
-                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                            <a href="{{ route('produits.show', $jeux[0]->id_produit) }}" id="btn-en-savoir-plus"
+                               class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                               style="background: transparent; border: none; cursor: pointer; padding: 0; text-decoration: none;">
                                 <span class="text-white font-bold text-xs md:text-sm" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
                                     EN SAVOIR PLUS
                                 </span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -134,6 +134,7 @@
             $jeuxArray = [];
             foreach($jeux as $jeu) {
                 $jeuxArray[] = [
+                    'id' => $jeu->id_produit,
                     'nom' => $jeu->nom,
                     'description' => $jeu->description,
                     'image' => $jeu->image ? asset($jeu->image) : asset('images/placeholder-product.png'),
@@ -242,6 +243,12 @@
                         if (description) description.textContent = jeu.description;
                         image.src = jeu.image;
                         image.alt = jeu.nom;
+                        
+                        // Mettre à jour le lien "En savoir plus"
+                        const btnEnSavoirPlus = document.getElementById('btn-en-savoir-plus');
+                        if (btnEnSavoirPlus && jeu.id) {
+                            btnEnSavoirPlus.href = '/produits/' + jeu.id;
+                        }
                         
                         // Mettre à jour les cartes avec transition
                         updateCartes();

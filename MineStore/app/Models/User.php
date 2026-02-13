@@ -27,6 +27,7 @@ class User extends Authenticatable
         'statut',
         'date_inscription',
         'team_id',
+        'avatar',
     ];
 
     /**

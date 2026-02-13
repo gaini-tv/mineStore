@@ -35,9 +35,17 @@
             <div class="flex items-center justify-end gap-3 h-full">
                 @if (auth()->check())
                     <div class="relative" id="profile-dropdown">
-                        <button id="profile-toggle" class="navbar-link text-[1.2rem] font-medium text-white transition-all duration-300 px-2 py-1" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            <span class="hidden sm:inline">{{ auth()->user()->name ?? 'Profil' }}</span>
-                            <span class="sm:hidden">Profil</span>
+                        @php
+                            $userAvatar = auth()->user()->avatar ? asset('images/avatar/' . auth()->user()->avatar) : asset('images/avatar/base.png');
+                        @endphp
+                        <button id="profile-toggle" class="navbar-link transition-all duration-300 px-2 py-1 flex items-center gap-2">
+                            <div class="w-10 h-10 rounded border-2 border-white overflow-hidden flex-shrink-0" style="aspect-ratio: 1/1;">
+                                <img src="{{ $userAvatar }}" 
+                                     alt="Avatar" 
+                                     class="w-full h-full"
+                                     style="object-fit: contain;">
+                            </div>
+                            <span class="hidden sm:inline text-white text-[1.2rem] font-medium" style="font-family: 'Minecrafter Alt', sans-serif;">{{ auth()->user()->name ?? 'Profil' }}</span>
                         </button>
                         <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#e3e3e0] py-1 z-50">
                             <a href="{{ route('profil.index') }}" class="block px-4 py-2 text-[1.2rem] text-[#1b1b18] hover:bg-[#e3e3e0] transition-colors" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>

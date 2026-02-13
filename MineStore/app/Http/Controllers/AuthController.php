@@ -64,6 +64,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'date_inscription' => now(),
+            'avatar' => 'base.png',
         ]);
 
         Auth::login($user);

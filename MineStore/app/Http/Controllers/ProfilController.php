@@ -2,82 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Produit;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ProfilController extends Controller
 {
     /**
-     * Affiche la page de profil avec les produits filtrés
+     * Affiche la page de profil
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Produit::where('actif', true);
+        return view('profil.index');
+    }
 
-        // Filtre par recherche de nom
-        if ($request->filled('search')) {
-            $query->where('nom', 'like', '%' . $request->search . '%');
-        }
+    /**
+     * Met à jour le profil de l'utilisateur
+     */
+    public function update(Request $request)
+    {
+        $user = Auth::user();
 
-        // Filtre par prix minimum
-        if ($request->filled('prix_min')) {
-            $query->where('prix', '>=', $request->prix_min);
-        }
-
-        // Filtre par prix maximum
-        if ($request->filled('prix_max')) {
-            $query->where('prix', '<=', $request->prix_max);
-        }
-
-        // Filtre par stock
-        if ($request->filled('stock')) {
-            switch ($request->stock) {
-                case 'en_stock':
-                    $query->where('stock', '>', 10);
-                    break;
-                case 'stock_faible':
-                    $query->whereBetween('stock', [1, 10]);
-                    break;
-                case 'rupture':
-                    $query->where('stock', '=', 0);
-                    break;
-            }
-        }
-
-        // Filtre par PEGI
-        if ($request->filled('pegi')) {
-            $query->where('pegi', $request->pegi);
-        }
-
-        // Tri
-        $sortBy = $request->get('sort', 'nom');
-        $sortOrder = $request->get('order', 'asc');
-
-        switch ($sortBy) {
-            case 'prix':
-                $query->orderBy('prix', $sortOrder);
-                break;
-            case 'date':
-                $query->orderBy('date_creation', $sortOrder);
-                break;
-            case 'stock':
-                $query->orderBy('stock', $sortOrder);
-                break;
-            default:
-                $query->orderBy('nom', $sortOrder);
-        }
-
-        $produits = $query->get();
-
-        // Récupérer les valeurs min/max pour les filtres
-        $prixMin = Produit::where('actif', true)->min('prix') ?? 0;
-        $prixMax = Produit::where('actif', true)->max('prix') ?? 1000;
-
-        return view('profil.index', [
-            'produits' => $produits,
-            'prixMin' => $prixMin,
-            'prixMax' => $prixMax,
-            'filters' => $request->all(),
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'avatar' => 'nullable|string|max:255',
         ]);
+
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'avatar' => $validated['avatar'] ?? $user->avatar,
+        ]);
+
+        return redirect()->route('profil.index')->with('success', 'Profil mis à jour avec succès !');
+    }
+
+    /**
+     * Met à jour le mot de passe de l'utilisateur
+     */
+    public function updatePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Vérifier le mot de passe actuel
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.'])->withInput();
+        }
+
+        // Mettre à jour le mot de passe
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->route('profil.index')->with('success', 'Mot de passe modifié avec succès !');
     }
 }
