@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Categorie;
 use App\Models\Produit;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -35,8 +36,73 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 2. Create 10 random users (without specific admin)
-        // User::factory(10)->create();
+        // 2. Create base users
+        $users = [
+            [
+                'prenom' => 'Adminis',
+                'nom' => 'trateur',
+                'email' => 'minestore-Admin@gmail.com',
+                'role' => 'admin',
+                'avatar' => 'Plan de travail 1 copie 6-2.png',
+            ],
+            [
+                'prenom' => 'Util',
+                'nom' => 'isateur',
+                'email' => 'minestore-User@gmail.com',
+                'role' => 'user',
+                'avatar' => 'base.png',
+            ],
+            [
+                'prenom' => 'Propri',
+                'nom' => 'étaire',
+                'email' => 'clementvolle@gmail.com',
+                'role' => 'user',
+                'avatar' => 'Plan de travail 1 copie 5.png',
+            ],
+            [
+                'prenom' => 'Dire',
+                'nom' => 'ecteur',
+                'email' => 'minestore-Manager@gmail.com',
+                'role' => 'user',
+                'avatar' => 'Plan de travail 1 copie 2.png',
+            ],
+            [
+                'prenom' => 'Responsable',
+                'nom' => 'Produit',
+                'email' => 'minestore-product@gmail.com',
+                'role' => 'user',
+                'avatar' => 'Plan de travail 1 copie 3.png',
+            ],
+            [
+                'prenom' => 'Responsable',
+                'nom' => 'Stock',
+                'email' => 'minestore-stock@gmail.com',
+                'role' => 'user',
+                'avatar' => 'Plan de travail 1 copie 4.png',
+            ],
+            [
+                'prenom' => 'Edi',
+                'nom' => 'teur',
+                'email' => 'minestore-editor@gmail.com',
+                'role' => 'user',
+                'avatar' => 'Plan de travail 1 copie 7.png',
+            ],
+        ];
+
+        foreach ($users as $data) {
+            User::updateOrCreate(
+                ['email' => $data['email']],
+                [
+                    'prenom' => $data['prenom'],
+                    'nom' => $data['nom'],
+                    'role' => $data['role'],
+                    'password' => Hash::make('Minecraft'),
+                    'statut' => 'actif',
+                    'date_inscription' => now(),
+                    'avatar' => $data['avatar'],
+                ]
+            );
+        }
 
         // 3. Create or update sample products
         Produit::updateOrCreate(

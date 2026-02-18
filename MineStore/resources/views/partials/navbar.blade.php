@@ -18,7 +18,7 @@
                 </a>
             </div>
 
-            {{-- Menu central : Accueil, Nos produits, Blog --}}
+            {{-- Menu central : Accueil, Nos produits, Blog, Administration --}}
             <div class="hidden md:flex items-center justify-center flex-1 gap-10 h-full">
                 <a href="{{ route('home') }}" class="navbar-link text-[1.2rem] font-medium text-white transition-all duration-300 {{ request()->routeIs('home') ? 'navbar-link-active' : '' }}" style="font-family: 'Minecrafter Alt', sans-serif;">
                     Accueil
@@ -29,6 +29,16 @@
                 <a href="{{ route('blog.index') }}" class="navbar-link text-[1.2rem] font-medium text-white transition-all duration-300 {{ request()->routeIs('blog.*') ? 'navbar-link-active' : '' }}" style="font-family: 'Minecrafter Alt', sans-serif;">
                     Blog
                 </a>
+                @if(auth()->check() && auth()->user()->entreprise_id && auth()->user()->role !== 'admin' && auth()->user()->role !== 'user')
+                    <a href="{{ route('entreprise.index') }}" class="navbar-link text-[1.2rem] font-medium text-white transition-all duration-300 {{ request()->routeIs('entreprise.*') ? 'navbar-link-active' : '' }}" style="font-family: 'Minecrafter Alt', sans-serif;">
+                        Entreprise
+                    </a>
+                @endif
+                @if(auth()->check() && auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.index') }}" class="navbar-link text-[1.2rem] font-medium text-white transition-all duration-300 {{ request()->routeIs('admin.*') ? 'navbar-link-active' : '' }}" style="font-family: 'Minecrafter Alt', sans-serif;">
+                        Administration
+                    </a>
+                @endif
             </div>
 
             {{-- Profil à droite --}}
@@ -83,6 +93,12 @@
                 <a href="{{ route('home') }}" class="navbar-link px-3 py-2 rounded-lg font-medium text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Accueil</a>
                 <a href="{{ route('produits.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Nos produits</a>
                 <a href="{{ route('blog.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Blog</a>
+                @if (auth()->check() && auth()->user()->entreprise_id && auth()->user()->role !== 'admin' && auth()->user()->role !== 'user')
+                    <a href="{{ route('entreprise.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Entreprise</a>
+                @endif
+                @if (auth()->check() && auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Administration</a>
+                @endif
                 @if (auth()->check())
                     <a href="{{ route('profil.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>
                 @endif

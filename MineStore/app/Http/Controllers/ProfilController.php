@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Entreprise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +30,8 @@ class ProfilController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'avatar' => 'nullable|string|max:255',
         ]);
@@ -37,7 +39,8 @@ class ProfilController extends Controller
         $avatar = isset($validated['avatar']) && $validated['avatar'] !== '' ? $validated['avatar'] : $user->avatar;
 
         $user->update([
-            'name' => $validated['name'],
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
             'email' => $validated['email'],
             'avatar' => $avatar,
         ]);
@@ -102,5 +105,37 @@ class ProfilController extends Controller
         ]);
 
         return redirect()->route('profil.index')->with('success', 'Mot de passe modifié avec succès !');
+    }
+
+    public function storeEntreprise(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'user') {
+            abort(403);
+        }
+
+        if ($user->entreprise_id) {
+            return redirect()->route('profil.index')->with('success', 'Vous faites déjà partie d’une entreprise.');
+        }
+
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'email_contact' => 'required|email|max:255',
+            'telephone' => 'required|string|max:50',
+            'adresse' => 'required|string|max:500',
+        ]);
+
+        Entreprise::create([
+            'nom' => $validated['nom'],
+            'description' => $validated['description'] ?? null,
+            'email_contact' => $validated['email_contact'],
+            'telephone' => $validated['telephone'],
+            'adresse' => $validated['adresse'],
+            'user_id' => $user->id,
+            'statut' => 'pending',
+        ]);
+
+        return redirect()->route('profil.index')->with('success', 'Demande de création d’entreprise envoyée.');
     }
 }

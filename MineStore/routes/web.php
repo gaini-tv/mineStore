@@ -5,6 +5,8 @@ use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\CommentaireController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\EntrepriseController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Route d'accueil
@@ -41,3 +43,21 @@ Route::get('/register', function () {
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/entreprise/confirm-delete/{token}', [EntrepriseController::class, 'confirmDeletion'])->name('entreprise.confirmDeletion');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.updateRole');
+    Route::post('/admin/categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
+    Route::put('/admin/categories/{categorie}', [AdminController::class, 'updateCategory'])->name('admin.categories.update');
+    Route::delete('/admin/categories/{categorie}', [AdminController::class, 'destroyCategory'])->name('admin.categories.destroy');
+    Route::post('/admin/entreprises/{entreprise}/approve', [AdminController::class, 'approveEntreprise'])->name('admin.entreprises.approve');
+    Route::post('/admin/entreprises/{entreprise}/refuse', [AdminController::class, 'refuseEntreprise'])->name('admin.entreprises.refuse');
+    Route::post('/admin/entreprises/{entreprise}/approve-deletion', [AdminController::class, 'approveEntrepriseDeletion'])->name('admin.entreprises.approveDeletion');
+    Route::post('/admin/entreprises/{entreprise}/cancel-deletion', [AdminController::class, 'cancelEntrepriseDeletion'])->name('admin.entreprises.cancelDeletion');
+    Route::post('/entreprises', [ProfilController::class, 'storeEntreprise'])->name('entreprises.store');
+    Route::get('/entreprise', [EntrepriseController::class, 'index'])->name('entreprise.index');
+    Route::post('/entreprise/delete-request', [EntrepriseController::class, 'requestDeletion'])->name('entreprise.requestDeletion');
+    Route::post('/entreprise/add-member', [EntrepriseController::class, 'addMember'])->name('entreprise.addMember');
+});

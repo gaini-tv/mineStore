@@ -184,7 +184,11 @@
                                             {{-- Nom et email à droite de l'avatar --}}
                                             <div class="flex-1">
                                                 <h4 class="text-lg font-bold" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
-                                                    {{ $commentaire->user->name ?? 'Utilisateur anonyme' }}
+                                                    @if($commentaire->user)
+                                                        {{ trim(($commentaire->user->prenom ?? '').' '.($commentaire->user->nom ?? '')) ?: 'Utilisateur anonyme' }}
+                                                    @else
+                                                        Utilisateur anonyme
+                                                    @endif
                                                 </h4>
                                                 @if($commentaire->user && $commentaire->user->email)
                                                     <p class="text-sm text-gray-500" style="font-family: 'Minecrafter Alt', sans-serif;">

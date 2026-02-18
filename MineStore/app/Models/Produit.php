@@ -20,6 +20,7 @@ class Produit extends Model
         'actif',
         'date_creation',
         'pegi',
+        'entreprise_id',
     ];
 
     /**
@@ -29,4 +30,9 @@ class Produit extends Model
         'prix' => 'decimal:2',
         'stock' => 'integer',
     ];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'entreprise_id', 'id_entreprise');
+    }
 }

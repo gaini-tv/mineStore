@@ -5,17 +5,60 @@
 @push('styles')
 <style>
     .profil-field-group { margin-top: 10px; margin-bottom: 10px; }
+    .profil-alert-container {
+        max-width: 40rem;
+        margin: 0 auto 1.5rem auto;
+        padding: 0 1rem;
+    }
+    .profil-alert {
+        position: relative;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        border-radius: 0.375rem;
+        font-family: 'Minecrafter Alt', sans-serif;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .profil-alert-success {
+        background-color: #dcfce7;
+        border: 1px solid #22c55e;
+        color: #166534;
+    }
+    .profil-alert-error {
+        background-color: #fee2e2;
+        border: 1px solid #ef4444;
+        color: #991b1b;
+    }
+    .profil-alert-close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.75rem;
+        background: transparent;
+        border: none;
+        font-size: 1.25rem;
+        line-height: 1;
+        cursor: pointer;
+        color: inherit;
+    }
 </style>
 @endpush
 
 @section('content')
     <div class="container mx-auto px-4 py-8" style="padding-top: 200px; margin-top: 20px; margin-bottom: 20px;">
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 max-w-4xl mx-auto">
-                {{ session('success') }}
+        @if(session('success') || session('error'))
+            <div class="profil-alert-container">
+                @if(session('success'))
+                    <div class="profil-alert profil-alert-success" id="profil-alert">
+                        <span>{{ session('success') }}</span>
+                        <button type="button" class="profil-alert-close" onclick="document.getElementById('profil-alert').style.display='none'">×</button>
+                    </div>
+                @elseif(session('error'))
+                    <div class="profil-alert profil-alert-error" id="profil-alert">
+                        <span>{{ session('error') }}</span>
+                        <button type="button" class="profil-alert-close" onclick="document.getElementById('profil-alert').style.display='none'">×</button>
+                    </div>
+                @endif
             </div>
         @endif
-        
+
         @auth
             {{-- Contenu pour utilisateur connecté --}}
             <div class="max-w-4xl mx-auto">
@@ -165,6 +208,57 @@
                 </div>
 
                 {{-- Section principale avec flex : Avatar/Nom à gauche, Informations à droite --}}
+                <div id="entreprise-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg shadow-lg p-6" style="padding: 20px; width: 700px; border: 2px solid #5baa47; box-shadow: 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Demande de création d’entreprise</h2>
+                            <button onclick="document.getElementById('entreprise-modal').classList.add('hidden')" class="cursor-pointer">
+                                <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                            </button>
+                        </div>
+                        <form method="POST" action="{{ route('entreprises.store') }}" class="space-y-4">
+                            @csrf
+                            <div class="profil-field-group">
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom de l’entreprise</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="text" name="nom" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                </div>
+                            </div>
+                            <div class="profil-field-group">
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Description</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <textarea name="description" rows="3" class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"></textarea>
+                                </div>
+                            </div>
+                            <div class="profil-field-group">
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email de contact</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="email" name="email_contact" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                </div>
+                            </div>
+                            <div class="profil-field-group">
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Téléphone</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="text" name="telephone" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                </div>
+                            </div>
+                            <div class="profil-field-group">
+                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Adresse</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <textarea name="adresse" rows="2" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex justify-end mt-4">
+                                <div class="relative" style="display: inline-block; width: 200px;">
+                                    <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                    <button type="submit" class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200" style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                        <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Envoyer la demande</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <div style="width: 100%; display: flex; flex-direction: row; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; margin-bottom: 24px;">
                     {{-- Section gauche : Avatar et nom --}}
                     <div style="width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center;">
@@ -187,9 +281,39 @@
                                 </svg>
                             </button>
                         </div>
-                        <h1 class="text-3xl font-bold text-[#1b1b18] mt-4" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            {{ auth()->user()->name }}
-                        </h1>
+                        @php
+                            $role = auth()->user()->role ?? 'user';
+                            $roleLabels = [
+                                'user' => 'Utilisateur',
+                                'admin' => 'Administrateur',
+                                'owner' => 'Propriétaire',
+                                'manager' => 'Directeur',
+                                'product_manager' => 'Responsable Produit',
+                                'stock_manager' => 'Responsable Stock',
+                                'editor' => 'Rédacteur',
+                            ];
+                            $roleColors = [
+                                'user' => '#5baa47',
+                                'admin' => '#e63946',
+                                'owner' => '#457b9d',
+                                'manager' => '#1d3557',
+                                'product_manager' => '#a8dadc',
+                                'stock_manager' => '#ffb703',
+                                'editor' => '#8d99ae',
+                            ];
+                            $roleLabel = $roleLabels[$role] ?? $role;
+                            $roleColor = $roleColors[$role] ?? '#5baa47';
+                        @endphp
+                        <div class="mt-4 flex items-center gap-3">
+                            <h1 class="text-3xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">
+                                {{ auth()->user()->prenom }} {{ auth()->user()->nom }}
+                            </h1>
+                            <span
+                                class="px-3 py-1 text-white text-sm rounded"
+                                style="background-color: {{ $roleColor }}; font-family: 'Minecrafter Alt', sans-serif;">
+                                {{ $roleLabel }}
+                            </span>
+                        </div>
                     </div>
                     
                     {{-- Section droite : Mes informations --}}
@@ -202,11 +326,23 @@
                                 <input type="hidden" name="avatar" id="selected-avatar" value="{{ auth()->user()->avatar ?? 'base.png' }}">
                                 
                                 <div class="profil-field-group">
+                                    <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Prénom</label>
+                                    <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                        <input type="text" 
+                                               name="prenom" 
+                                               value="{{ auth()->user()->prenom }}"
+                                               required 
+                                               class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                               style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                                    </div>
+                                </div>
+                                
+                                <div class="profil-field-group">
                                     <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom</label>
                                     <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                         <input type="text" 
-                                               name="name" 
-                                               value="{{ auth()->user()->name }}"
+                                               name="nom" 
+                                               value="{{ auth()->user()->nom }}"
                                                required 
                                                class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
                                                style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
@@ -225,7 +361,7 @@
                                     </div>
                                 </div>
                                 
-                                @error('name')
+                                @error('nom')
                                     <p class="text-red-500 text-sm">{{ $message }}</p>
                                 @enderror
                                 @error('email')
@@ -268,6 +404,54 @@
                                 </a>
                             </div>
                         </div>
+                        @php
+                            $user = auth()->user();
+                            $userEntreprise = $user?->entreprise;
+                            $pendingEntreprise = null;
+                            if ($user && !$userEntreprise) {
+                                $pendingEntreprise = \App\Models\Entreprise::where('user_id', $user->id)->where('statut', 'pending')->first();
+                            }
+                        @endphp
+                        @if($user && $user->role === 'user')
+                            @if(!$userEntreprise)
+                                <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                                    <h2 class="text-2xl font-bold text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Créer une entreprise</h2>
+                                    <p class="text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">Créer une entreprise vous permet de vendre sur notre site vos propres produits.</p>
+                                    <div class="relative" style="display: inline-block; width: 280px;">
+                                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                        @if($pendingEntreprise)
+                                            <div class="absolute inset-0 w-full h-full flex items-center justify-center" style="pointer-events: none; opacity: 0.6;">
+                                                <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                                                    Demande en cours...
+                                                </span>
+                                            </div>
+                                        @else
+                                            <button onclick="document.getElementById('entreprise-modal').classList.remove('hidden')" class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200" style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                                <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                                                    Faire une demande
+                                                </span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    @if($pendingEntreprise)
+                                        <p class="text-[#706f6c] mt-2" style="font-family: 'Minecrafter Alt', sans-serif;">
+                                            Votre demande est en attente de validation par l’administration.
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
+                        @elseif($user && $user->role !== 'admin' && $userEntreprise)
+                            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                                <h2 class="text-2xl font-bold text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mon entreprise</h2>
+                                <p class="text-[#1b1b18] mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">{{ $userEntreprise->nom }}</p>
+                                <div class="relative" style="display: inline-block; width: 280px;">
+                                    <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                                    <a href="{{ route('entreprise.index') }}" class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200" style="background: transparent; border: none; cursor: pointer; padding: 0; text-decoration: none;">
+                                        <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Gérer l’entreprise</span>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -354,7 +538,7 @@
                     <div id="register-form" class="bg-white rounded-lg p-[100px] hidden">
                         <h2 class="text-3xl font-bold text-[#1b1b18] mb-6 text-center" style="margin-bottom: 20px; font-family: 'Minecrafter Alt', sans-serif;">Inscription</h2>
                         
-                        @if ($errors->has('name') || ($errors->has('email') && $errors->has('name')) || $errors->has('password'))
+                        @if ($errors->has('nom') || ($errors->has('email') && $errors->has('nom')) || $errors->has('password'))
                             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                                 <ul class="list-disc list-inside">
                                     @foreach ($errors->all() as $error)
@@ -368,12 +552,26 @@
                             @csrf
                             
                             <div class="mb-4 profil-field-group">
+                                <label for="register-firstname" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Prénom</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="text" 
+                                           id="register-firstname" 
+                                           name="prenom" 
+                                           value="{{ old('prenom') }}"
+                                           required 
+                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"
+                                           placeholder="Votre prénom">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4 profil-field-group">
                                 <label for="register-name" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom</label>
                                 <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                                     <input type="text" 
                                            id="register-name" 
-                                           name="name" 
-                                           value="{{ old('name') }}"
+                                           name="nom" 
+                                           value="{{ old('nom') }}"
                                            required 
                                            class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
                                            style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"
@@ -560,6 +758,17 @@
             }
         });
         @endauth
+
+        setTimeout(function () {
+            var alert = document.getElementById('profil-alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.4s';
+                alert.style.opacity = '0';
+                setTimeout(function () {
+                    alert.style.display = 'none';
+                }, 400);
+            }
+        }, 4000);
     </script>
     @endpush
 @endsection
