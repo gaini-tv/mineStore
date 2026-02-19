@@ -60,4 +60,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/entreprise', [EntrepriseController::class, 'index'])->name('entreprise.index');
     Route::post('/entreprise/delete-request', [EntrepriseController::class, 'requestDeletion'])->name('entreprise.requestDeletion');
     Route::post('/entreprise/add-member', [EntrepriseController::class, 'addMember'])->name('entreprise.addMember');
+    Route::post('/produits', [ProduitController::class, 'store'])->name('produits.store');
 });

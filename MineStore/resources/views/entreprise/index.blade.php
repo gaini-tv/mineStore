@@ -4,6 +4,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/entreprise.css') }}">
+<link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
 @endpush
 
 @section('content')
@@ -157,9 +158,9 @@
             </div>
         </div>
 
-        <div id="entreprise-member-modal" class="entreprise-modal-backdrop" style="display: none;">
-            <div class="entreprise-modal-content">
-                <h3 style="font-family: 'Minecrafter Alt', sans-serif; font-size: 1.25rem; margin-bottom: 1rem;">Ajouter un membre</h3>
+        <div id="entreprise-member-modal" class="modal-form-backdrop" style="display: none;">
+            <div class="modal-form-container" style="max-width: 500px;">
+                <h3 class="modal-form-title" style="font-size: 1.25rem; margin-bottom: 1rem;">Ajouter un membre</h3>
                 <form method="POST" action="{{ route('entreprise.addMember') }}">
                     @csrf
                     <div style="margin-bottom: 0.75rem;">
@@ -198,5 +199,14 @@
                 }, 1000);
             }
         }, 4000);
+
+        var entrepriseMemberModal = document.getElementById('entreprise-member-modal');
+        if (entrepriseMemberModal) {
+            entrepriseMemberModal.addEventListener('click', function(e) {
+                if (e.target === entrepriseMemberModal) {
+                    entrepriseMemberModal.style.display = 'none';
+                }
+            });
+        }
     </script>
 @endsection

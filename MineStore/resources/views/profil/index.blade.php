@@ -39,6 +39,7 @@
         color: inherit;
     }
 </style>
+    <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
 @endpush
 
 @section('content')
@@ -129,11 +130,11 @@
                 </div>
 
                 {{-- Modal de modification du mot de passe --}}
-                <div id="password-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-lg shadow-lg p-6" style="padding: 20px; width: 600px;">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Modifier mon mot de passe</h2>
-                            <button onclick="document.getElementById('password-modal').classList.add('hidden')" class="cursor-pointer">
+                <div id="password-modal" class="hidden modal-form-backdrop">
+                    <div class="modal-form-container" style="max-width: 600px;">
+                        <div class="modal-form-header">
+                            <h2 class="modal-form-title">Modifier mon mot de passe</h2>
+                            <button onclick="document.getElementById('password-modal').classList.add('hidden')" class="modal-form-close-button">
                                 <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
                             </button>
                         </div>
@@ -141,39 +142,39 @@
                             @csrf
                             
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe actuel</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                <label class="modal-form-label">Mot de passe actuel</label>
+                                <div class="modal-form-field-wrapper">
                                     <input type="password" 
                                            name="current_password" 
                                            required 
-                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
-                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           class="modal-form-input"
+                                           style="border: none;"
                                            placeholder="Votre mot de passe actuel">
                                 </div>
                             </div>
                             
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nouveau mot de passe</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                <label class="modal-form-label">Nouveau mot de passe</label>
+                                <div class="modal-form-field-wrapper">
                                     <input type="password" 
                                            name="password" 
                                            required 
                                            minlength="8"
-                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
-                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           class="modal-form-input"
+                                           style="border: none;"
                                            placeholder="Nouveau mot de passe">
                                 </div>
                             </div>
                             
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Confirmer le nouveau mot de passe</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                <label class="modal-form-label">Confirmer le nouveau mot de passe</label>
+                                <div class="modal-form-field-wrapper">
                                     <input type="password" 
                                            name="password_confirmation" 
                                            required 
                                            minlength="8"
-                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
-                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;"
+                                           class="modal-form-input"
+                                           style="border: none;"
                                            placeholder="Confirmer le nouveau mot de passe">
                                 </div>
                             </div>
@@ -208,44 +209,44 @@
                 </div>
 
                 {{-- Section principale avec flex : Avatar/Nom à gauche, Informations à droite --}}
-                <div id="entreprise-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-lg shadow-lg p-6" style="padding: 20px; width: 700px; border: 2px solid #5baa47; box-shadow: 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">Demande de création d’entreprise</h2>
-                            <button onclick="document.getElementById('entreprise-modal').classList.add('hidden')" class="cursor-pointer">
+                <div id="entreprise-modal" class="hidden modal-form-backdrop">
+                    <div class="modal-form-container">
+                        <div class="modal-form-header">
+                            <h2 class="modal-form-title">Demande de création d’entreprise</h2>
+                            <button onclick="document.getElementById('entreprise-modal').classList.add('hidden')" class="modal-form-close-button">
                                 <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
                             </button>
                         </div>
                         <form method="POST" action="{{ route('entreprises.store') }}" class="space-y-4">
                             @csrf
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Nom de l’entreprise</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
-                                    <input type="text" name="nom" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                <label class="modal-form-label">Nom de l’entreprise</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="text" name="nom" required class="modal-form-input" style="border: none;">
                                 </div>
                             </div>
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Description</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
-                                    <textarea name="description" rows="3" class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"></textarea>
+                                <label class="modal-form-label">Description</label>
+                                <div class="modal-form-field-wrapper">
+                                    <textarea name="description" rows="3" class="modal-form-textarea" style="border: none;"></textarea>
                                 </div>
                             </div>
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Email de contact</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
-                                    <input type="email" name="email_contact" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                <label class="modal-form-label">Email de contact</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="email" name="email_contact" required class="modal-form-input" style="border: none;">
                                 </div>
                             </div>
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Téléphone</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
-                                    <input type="text" name="telephone" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                <label class="modal-form-label">Téléphone</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="text" name="telephone" required class="modal-form-input" style="border: none;">
                                 </div>
                             </div>
                             <div class="profil-field-group">
-                                <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Adresse</label>
-                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
-                                    <textarea name="adresse" rows="2" required class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none" style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;"></textarea>
+                                <label class="modal-form-label">Adresse</label>
+                                <div class="modal-form-field-wrapper">
+                                    <textarea name="adresse" rows="2" required class="modal-form-textarea" style="border: none;"></textarea>
                                 </div>
                             </div>
                             <div class="flex justify-end mt-4">
@@ -753,6 +754,13 @@
         
         // Fermer la modal de mot de passe en cliquant sur le fond
         document.getElementById('password-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Fermer la modal d’entreprise en cliquant sur le fond
+        document.getElementById('entreprise-modal')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.add('hidden');
             }

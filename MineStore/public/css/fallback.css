@@ -258,6 +258,26 @@ input:focus {
     padding-right: 2rem;
 }
 
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+.product-filter-modal {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 20px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 2px solid #5baa47;
+    box-shadow: 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+}
+
 .h-10 {
     height: 2.5rem;
 }

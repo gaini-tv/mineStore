@@ -4,6 +4,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
 @endpush
 
 @section('content')
@@ -292,4 +293,16 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.querySelectorAll('[id^="entreprise-active-modal-"], [id^="entreprise-demand-modal-"], [id^="entreprise-delete-modal-"]').forEach(function(modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    @endpush
 @endsection

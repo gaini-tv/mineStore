@@ -1,0 +1,99 @@
+ .modal-form-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 50;
+}
+
+.modal-form-backdrop:not(.hidden) {
+    display: flex;
+ }
+ 
+ .modal-form-container {
+     background-color: #ffffff;
+     border-radius: 0.5rem;
+     padding: 20px;
+     max-width: 700px;
+     width: 100%;
+     max-height: 90vh;
+     overflow-y: auto;
+     border: 2px solid #5baa47;
+     box-shadow: 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+ }
+ 
+ .modal-form-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 1rem;
+ }
+ 
+ .modal-form-title {
+     font-family: 'Minecrafter Alt', sans-serif;
+     font-size: 1.75rem;
+     font-weight: 700;
+     color: #ffffff;
+     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+         0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+ }
+ 
+ .modal-form-close-button {
+     cursor: pointer;
+ }
+ 
+ .modal-form-field-group {
+     margin-bottom: 1rem;
+ }
+ 
+ .modal-form-label {
+     display: block;
+     margin-bottom: 0.5rem;
+     font-size: 0.875rem;
+     font-weight: 500;
+     color: #1b1b18;
+     font-family: 'Minecrafter Alt', sans-serif;
+ }
+ 
+ .modal-form-field-wrapper {
+     padding: 0.5rem;
+     background-image: url('/images/searchbar.png');
+     background-size: 100% 100%;
+     background-position: center;
+     background-repeat: no-repeat;
+     border: none;
+     border-radius: 0;
+ }
+ 
+ .modal-form-input,
+ .modal-form-textarea,
+ .modal-form-select {
+     width: 100%;
+     padding: 0.5rem 0.75rem;
+     border: 0;
+     background-color: transparent;
+     color: #1b1b18;
+     font-family: 'Minecrafter Alt', sans-serif;
+     border-radius: 0;
+     outline: none;
+ }
+ 
+ .modal-form-input::placeholder,
+ .modal-form-textarea::placeholder {
+     color: #706f6c;
+ }
+ 
+ .modal-form-select {
+     -webkit-appearance: none;
+     -moz-appearance: none;
+     appearance: none;
+ }
+ 
+ .modal-form-footer {
+     display: flex;
+     justify-content: flex-end;
+     gap: 1rem;
+     margin-top: 1.5rem;
+ }

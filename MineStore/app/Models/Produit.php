@@ -35,4 +35,9 @@ class Produit extends Model
     {
         return $this->belongsTo(Entreprise::class, 'entreprise_id', 'id_entreprise');
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Categorie::class, 'classer', 'produit_id', 'categorie_id', 'id_produit', 'id_categorie');
+    }
 }
