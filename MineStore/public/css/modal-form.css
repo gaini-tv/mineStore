@@ -56,6 +56,10 @@
      color: #1b1b18;
      font-family: 'Minecrafter Alt', sans-serif;
  }
+
+.modal-form-label-disabled {
+    color: #9ca3af;
+}
  
  .modal-form-field-wrapper {
      padding: 0.5rem;
@@ -79,6 +83,10 @@
      border-radius: 0;
      outline: none;
  }
+
+.modal-form-input-disabled {
+    color: #9ca3af;
+}
  
  .modal-form-input::placeholder,
  .modal-form-textarea::placeholder {

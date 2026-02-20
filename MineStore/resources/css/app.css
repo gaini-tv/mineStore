@@ -180,6 +180,26 @@
     color: #706f6c;
 }
 
+.btn-panier-wrapper {
+    transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+    transform-origin: center;
+}
+
+.btn-panier-wrapper:hover {
+    transform: scale(1.03);
+}
+
+.btn-panier-wrapper-disabled,
+.btn-panier-wrapper-disabled:hover {
+    transform: none;
+    filter: grayscale(0.6);
+    opacity: 0.6;
+}
+
+.btn-panier-disabled {
+    cursor: not-allowed;
+}
+
 .admin-subtitle {
     font-weight: 600;
     margin-bottom: 0.5rem;

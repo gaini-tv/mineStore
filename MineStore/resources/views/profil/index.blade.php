@@ -593,6 +593,19 @@
                                            placeholder="Votre email">
                                 </div>
                             </div>
+
+                            <div class="mb-4 profil-field-group">
+                                <label for="register-birthdate" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Date de naissance</label>
+                                <div class="p-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                                    <input type="date"
+                                           id="register-birthdate"
+                                           name="date_naissance"
+                                           value="{{ old('date_naissance') }}"
+                                           required
+                                           class="w-full px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none"
+                                           style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none;">
+                                </div>
+                            </div>
                             
                             <div class="mb-4 profil-field-group">
                                 <label for="register-password" class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Mot de passe</label>

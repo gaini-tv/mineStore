@@ -22,12 +22,14 @@ class User extends Authenticatable
         'password',
         'nom',
         'prenom',
+        'date_naissance',
         'role',
         'statut',
         'date_inscription',
         'team_id',
         'entreprise_id',
         'avatar',
+        'verification_token',
     ];
 
     /**
@@ -51,6 +53,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'date_inscription' => 'datetime',
+            'date_naissance' => 'date',
+            'last_login_at' => 'datetime',
         ];
     }
 

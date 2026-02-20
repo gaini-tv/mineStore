@@ -16,6 +16,8 @@ class Produit extends Model
         'prix',
         'image',
         'stock',
+        'stock_low_threshold',
+        'infinite_stock',
         'reference',
         'actif',
         'date_creation',
@@ -29,6 +31,8 @@ class Produit extends Model
     protected $casts = [
         'prix' => 'decimal:2',
         'stock' => 'integer',
+        'stock_low_threshold' => 'integer',
+        'infinite_stock' => 'boolean',
     ];
 
     public function entreprise()

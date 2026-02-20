@@ -2,19 +2,48 @@
 
 @section('title', $produit->nom)
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
+@endpush
+
 @section('content')
+    @php
+        $stockValue = $produit->stock;
+        $lowThreshold = $produit->stock_low_threshold ?? 100;
+        $infiniteStock = $produit->infinite_stock ?? false;
+
+        if ($infiniteStock) {
+            $stockStatusLabel = 'En stock';
+            $stockStatusColor = '#5baa47';
+            $isOutOfStock = false;
+        } elseif ($stockValue <= 0) {
+            $stockStatusLabel = 'Rupture de stock';
+            $stockStatusColor = '#f44336';
+            $isOutOfStock = true;
+        } elseif ($stockValue < $lowThreshold) {
+            $stockStatusLabel = 'Stock faible';
+            $stockStatusColor = '#ff9800';
+            $isOutOfStock = false;
+        } else {
+            $stockStatusLabel = 'En stock';
+            $stockStatusColor = '#5baa47';
+            $isOutOfStock = false;
+        }
+    @endphp
+
     <div class="container mx-auto px-4 py-8" style="padding-top: 200px;">
         <div class="bg-white rounded-lg shadow-md overflow-hidden" style="width: 100%;">
-            <div class="flex flex-col md:flex-row">
+            <div class="info" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem;">
                 {{-- Image du produit --}}
-                <div class="md:w-1/2 flex items-center justify-center p-8 bg-gray-50" style="width: 50%;">
+                <div class="flex items-center justify-center p-8 bg-gray-50" style="grid-column: 1;">
                     <img src="{{ $produit->image ? asset($produit->image) : asset('images/placeholder-product.png') }}"
                          alt="{{ $produit->nom }}"
-                         class="max-w-full max-h-96 object-contain transition-all duration-300 hover:scale-105 hover:opacity-90 cursor-pointer">
+                         class="transition-all duration-300 hover:scale-105 hover:opacity-90 cursor-pointer"
+                         style="max-width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block;">
                 </div>
 
                 {{-- Informations du produit --}}
-                <div class="md:w-1/2 p-8 flex flex-col justify-center relative" style="width: 50%; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: flex-start; padding-right: 100px; row-gap: 30px;">
+                <div class="p-8 flex flex-col justify-center relative" style="grid-column: 2 / 4; margin-right: 4rem; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: flex-start; row-gap: 30px;">
                     {{-- Bouton Retour --}}
                     <a href="{{ route('produits.index') }}" 
                        class="transition-colors duration-200 inline-flex items-center gap-2" style="color: #5baa47;">
@@ -26,13 +55,9 @@
                         <h1 class="text-3xl md:text-4xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif;">
                             {{ $produit->nom }}
                         </h1>
-                        @if($produit->stock > 50)
-                            <span class="font-semibold absolute right-0" style="color: #5baa47; font-family: 'Minecrafter Alt', sans-serif;">En stock</span>
-                        @elseif($produit->stock > 0)
-                            <span class="font-semibold absolute right-0" style="color: #ff9800; font-family: 'Minecrafter Alt', sans-serif;">Stock faible</span>
-                        @else
-                            <span class="font-semibold absolute right-0" style="color: #f44336; font-family: 'Minecrafter Alt', sans-serif;">Rupture de stock</span>
-                        @endif
+                        <span class="font-semibold absolute right-0" style="color: {{ $stockStatusColor }}; font-family: 'Minecrafter Alt', sans-serif;">
+                            {{ $stockStatusLabel }}
+                        </span>
                     </div>
 
                     @if($produit->description)
@@ -52,18 +77,37 @@
                         @endif
                     </div>
 
-                    {{-- Bouton Ajouter au panier avec image PEGI --}}
-                    <div class="relative mb-4" style="position: relative; width: 100%;">
-                        <div class="relative" style="display: inline-block; width: 300px;">
+                    {{-- Bouton Ajouter au panier avec actions de gestion --}}
+                    <div class="relative mb-4" style="position: relative; width: 100%; display: flex; align-items: flex-end; gap: 16px;">
+                        <div class="relative btn-panier-wrapper {{ $isOutOfStock ? 'btn-panier-wrapper-disabled' : '' }}" style="display: inline-block; width: 300px;">
                             <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
                             <button type="button"
-                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
-                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
-                                <span class="text-white font-bold text-sm md:text-base" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier {{ $isOutOfStock ? 'btn-panier-disabled' : '' }}"
+                                    style="background: transparent; border: none; padding: 0;"
+                                    @if($isOutOfStock) disabled @endif>
+                                <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
                                     AJOUTER AU PANIER
                                 </span>
                             </button>
                         </div>
+                        
+                        @if($canManageProduct ?? false)
+                            <div class="flex gap-3">
+                                <button type="button"
+                                        id="open-edit-product-btn"
+                                        class="px-4 py-2"
+                                        style="background-color: #5baa47; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #3f7c33; cursor: pointer;">
+                                    Modifier le produit
+                                </button>
+                                <button type="button"
+                                        id="open-delete-product-btn"
+                                        class="px-4 py-2"
+                                        style="background-color: #b91c1c; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #7f1d1d; cursor: pointer;">
+                                    Supprimer
+                                </button>
+                            </div>
+                        @endif
+
                         {{-- Image PEGI collée à droite en bas --}}
                         @if($produit->pegi)
                             <img src="{{ asset($produit->pegi) }}" 
@@ -226,6 +270,146 @@
             </div>
         </div>
 
+        {{-- Modale d'édition de produit --}}
+        @if($canManageProduct ?? false)
+            @php
+                $currentCategorieId = $produit->categories->first()->id_categorie ?? null;
+            @endphp
+            <div id="edit-product-modal" class="modal-form-backdrop hidden">
+                <div class="modal-form-container">
+                    <div class="modal-form-header">
+                        <h2 class="modal-form-title">Modifier le produit</h2>
+                        <button type="button" id="close-edit-product-btn" class="modal-form-close-button">
+                            <img src="{{ asset('images/cross.png') }}" alt="Fermer" style="width: 24px; height: 24px;">
+                        </button>
+                    </div>
+                    <form action="{{ route('produits.update', $produit->id_produit) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
+                            <div>
+                                <label class="modal-form-label">Nom du produit</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="text" name="nom" class="modal-form-input" style="border: none;" value="{{ old('nom', $produit->nom) }}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="modal-form-label">Référence</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="text" name="reference" class="modal-form-input" style="border: none;" value="{{ old('reference', $produit->reference) }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
+                            <div>
+                                <label class="modal-form-label">Description</label>
+                                <div class="modal-form-field-wrapper">
+                                    <textarea name="description" rows="4" class="modal-form-textarea" style="border: none;">{{ old('description', $produit->description) }}</textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="modal-form-label">Prix (€)</label>
+                                <div class="modal-form-field-wrapper">
+                                    <input type="number" name="prix" step="0.01" min="0" class="modal-form-input" style="border: none;" value="{{ old('prix', $produit->prix) }}">
+                                </div>
+                                <label class="modal-form-label" style="margin-top: 1rem; margin-bottom: 0.25rem;">
+                                    <input type="checkbox" name="infinite_stock" id="edit_infinite_stock" value="1" class="h-4 w-4" style="margin-right: 0.5rem;" {{ $produit->infinite_stock ? 'checked' : '' }}>
+                                    Stock infini
+                                </label>
+                                <label class="modal-form-label" id="edit_stock_label">Stock</label>
+                                <div class="modal-form-field-wrapper" style="margin-bottom: 0.5rem;">
+                                    <input type="number" name="stock" id="edit_stock_input" min="0" class="modal-form-input" style="border: none;" value="{{ old('stock', $produit->stock) }}">
+                                </div>
+                                <label class="modal-form-label" id="edit_stock_low_threshold_label">Seuil "stock faible"</label>
+                                <div class="modal-form-field-wrapper" style="margin-bottom: 0.5rem;">
+                                    <input type="number" name="stock_low_threshold" id="edit_stock_low_threshold" min="1" class="modal-form-input" style="border: none;" value="{{ old('stock_low_threshold', $produit->stock_low_threshold ?? 100) }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
+                            <div>
+                                <label class="modal-form-label">Catégorie</label>
+                                <div class="modal-form-field-wrapper">
+                                    <select name="categorie_id" class="modal-form-select" style="border: none;">
+                                        @foreach(($categories ?? []) as $cat)
+                                            <option value="{{ $cat->id_categorie }}" @if(($currentCategorieId && $currentCategorieId === $cat->id_categorie)) selected @endif>{{ $cat->nom }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="modal-form-label">PEGI (optionnel)</label>
+                                <div class="modal-form-field-wrapper">
+                                    <select name="pegi" class="modal-form-select" style="border: none;">
+                                        <option value="">Aucun</option>
+                                        <option value="images/pegi3.png" {{ old('pegi', $produit->pegi) === 'images/pegi3.png' ? 'selected' : '' }}>PEGI 3</option>
+                                        <option value="images/pegi7.png" {{ old('pegi', $produit->pegi) === 'images/pegi7.png' ? 'selected' : '' }}>PEGI 7</option>
+                                        <option value="images/pegi12.png" {{ old('pegi', $produit->pegi) === 'images/pegi12.png' ? 'selected' : '' }}>PEGI 12</option>
+                                        <option value="images/pegi16.png" {{ old('pegi', $produit->pegi) === 'images/pegi16.png' ? 'selected' : '' }}>PEGI 16</option>
+                                        <option value="images/pegi18.png" {{ old('pegi', $produit->pegi) === 'images/pegi18.png' ? 'selected' : '' }}>PEGI 18</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
+                            <div>
+                                <label class="modal-form-label">Image (laisser vide pour conserver l'actuelle)</label>
+                                <input type="file" name="image" accept="image/*" class="w-full px-3 py-2 bg-white rounded border border-[#e3e3e0]" style="font-family: 'Minecrafter Alt', sans-serif;">
+                            </div>
+                        </div>
+                        <div class="modal-form-footer">
+                            <button type="button"
+                                    id="cancel-edit-product-btn"
+                                    class="px-4 py-2"
+                                    style="background-color: #e5e7eb; color: #1f2933; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #9ca3af; cursor: pointer;">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2"
+                                    style="background-color: #5baa47; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #3f7c33; cursor: pointer;">
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Modale de confirmation de suppression --}}
+            <div id="delete-product-modal" class="modal-form-backdrop hidden">
+                <div class="modal-form-container">
+                    <div class="modal-form-header">
+                        <h2 class="modal-form-title">Supprimer le produit</h2>
+                        <button type="button" id="close-delete-product-btn" class="modal-form-close-button">
+                            <img src="{{ asset('images/cross.png') }}" alt="Fermer" style="width: 24px; height: 24px;">
+                        </button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
+                            Êtes-vous sûr de vouloir supprimer ce produit ?<br>
+                            Cette action supprimera également toutes les données associées (commentaires, paniers, commandes liées) ainsi que l'image du produit.
+                        </p>
+                    </div>
+                    <form action="{{ route('produits.destroy', $produit->id_produit) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-form-footer">
+                            <button type="button"
+                                    id="cancel-delete-product-btn"
+                                    class="px-4 py-2"
+                                    style="background-color: #e5e7eb; color: #1f2933; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #9ca3af; cursor: pointer;">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2"
+                                    style="background-color: #b91c1c; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #7f1d1d; cursor: pointer;">
+                                Supprimer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+
         {{-- Section Sélectionné pour vous --}}
         @if(isset($produitsSuggere) && $produitsSuggere->count() > 0)
             <div class="mt-12 pt-12 pb-12" style="padding-left: 50px; padding-right: 50px;">
@@ -240,7 +424,9 @@
                                 'description' => $produitSug->description ?? '',
                                 'price' => number_format($produitSug->prix, 2, ',', ' '),
                                 'image' => $produitSug->image ? asset($produitSug->image) : asset('images/placeholder-product.png'),
-                                'productId' => $produitSug->id_produit
+                                'productId' => $produitSug->id_produit,
+                                'stock' => $produitSug->stock,
+                                'infiniteStock' => $produitSug->infinite_stock
                             ])
                         </div>
                     @endforeach
@@ -357,6 +543,111 @@
                         arrowIcon.style.transform = 'rotate(0deg)';
                     }
                 });
+            }
+        });
+
+        // Gestion des modales d'édition et de suppression de produit
+        document.addEventListener('DOMContentLoaded', function() {
+            const editBtn = document.getElementById('open-edit-product-btn');
+            const deleteBtn = document.getElementById('open-delete-product-btn');
+            const editModal = document.getElementById('edit-product-modal');
+            const deleteModal = document.getElementById('delete-product-modal');
+            const closeEditBtn = document.getElementById('close-edit-product-btn');
+            const closeDeleteBtn = document.getElementById('close-delete-product-btn');
+            const cancelEditBtn = document.getElementById('cancel-edit-product-btn');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-product-btn');
+
+            if (editBtn && editModal) {
+                editBtn.addEventListener('click', function() {
+                    editModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeEditBtn && editModal) {
+                closeEditBtn.addEventListener('click', function() {
+                    editModal.classList.add('hidden');
+                });
+            }
+
+            if (cancelEditBtn && editModal) {
+                cancelEditBtn.addEventListener('click', function() {
+                    editModal.classList.add('hidden');
+                });
+            }
+
+            if (editModal) {
+                editModal.addEventListener('click', function(e) {
+                    if (e.target === editModal) {
+                        editModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            if (deleteBtn && deleteModal) {
+                deleteBtn.addEventListener('click', function() {
+                    deleteModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeDeleteBtn && deleteModal) {
+                closeDeleteBtn.addEventListener('click', function() {
+                    deleteModal.classList.add('hidden');
+                });
+            }
+
+            if (cancelDeleteBtn && deleteModal) {
+                cancelDeleteBtn.addEventListener('click', function() {
+                    deleteModal.classList.add('hidden');
+                });
+            }
+
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === deleteModal) {
+                        deleteModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            const editInfiniteCheckbox = document.getElementById('edit_infinite_stock');
+            const editStockInput = document.getElementById('edit_stock_input');
+            const editStockLowThresholdInput = document.getElementById('edit_stock_low_threshold');
+            const editStockLowThresholdLabel = document.getElementById('edit_stock_low_threshold_label');
+            const editStockLabel = document.getElementById('edit_stock_label');
+
+            function updateEditStockInfiniteState() {
+                if (!editInfiniteCheckbox || !editStockInput || !editStockLowThresholdInput) {
+                    return;
+                }
+                if (editInfiniteCheckbox.checked) {
+                    editStockInput.value = '';
+                    editStockInput.disabled = true;
+                    editStockLowThresholdInput.disabled = true;
+                    editStockInput.classList.add('modal-form-input-disabled');
+                    editStockLowThresholdInput.classList.add('modal-form-input-disabled');
+                    if (editStockLabel) {
+                        editStockLabel.classList.add('modal-form-label-disabled');
+                    }
+                    if (editStockLowThresholdLabel) {
+                        editStockLowThresholdLabel.classList.add('modal-form-label-disabled');
+                    }
+                } else {
+                    editStockInput.disabled = false;
+                    editStockLowThresholdInput.disabled = false;
+                    editStockInput.classList.remove('modal-form-input-disabled');
+                    editStockLowThresholdInput.classList.remove('modal-form-input-disabled');
+                    if (editStockLabel) {
+                        editStockLabel.classList.remove('modal-form-label-disabled');
+                    }
+                    if (editStockLowThresholdLabel) {
+                        editStockLowThresholdLabel.classList.remove('modal-form-label-disabled');
+                    }
+                }
+            }
+
+            if (editInfiniteCheckbox) {
+                editInfiniteCheckbox.addEventListener('change', updateEditStockInfiniteState);
+                updateEditStockInfiniteState();
             }
         });
     </script>

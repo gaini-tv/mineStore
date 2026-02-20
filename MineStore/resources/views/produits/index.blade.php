@@ -19,7 +19,7 @@
         <div class="ProductNav mb-6"
              style="display: grid;margin-bottom:1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 1.5rem; row-gap: 1rem; align-items: center;">
             <div class="searchProduct flex justify-center" style="grid-column: 1; grid-row: 1; width: 100%;">
-                <form method="GET" action="{{ route('produits.index') }}" class="flex items-center gap-2" style="width: 100%;">
+                <form method="GET" action="{{ route('produits.index') }}" id="product-search-form" style="width: 100%;">
                     <div class="searchbar-container flex gap-2 p-2" style="width: 100%; background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 60%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                         <input type="text"
                                name="search"
@@ -37,14 +37,24 @@
             </div>
 
             <div class="FilterProduct flex items-center justify-start gap-4" style="grid-column: 2; grid-row: 1;">
-                <form method="GET" action="{{ route('produits.index') }}">
-                    <select name="categorie_id"
-                            class="px-3 py-2 bg-white rounded border border-[#e3e3e0]"
-                            style="font-family: 'Minecrafter Alt', sans-serif;"
-                            onchange="this.form.submit()">
-                        <option value="">Toutes les catégories</option>
+                <form method="GET" action="{{ route('produits.index') }}" id="product-category-form">
+                    <select
+                        name="categorie_id"
+                        class="px-3 py-2 bg-white rounded border border-[#e3e3e0] text-sm"
+                        style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;"
+                        onchange="this.form.dispatchEvent(new Event('submit', { cancelable: true }))"
+                    >
+                        <option value="">
+                            Toutes les catégories ({{ $totalProduitsActifs ?? 0 }})
+                        </option>
                         @foreach(($categories ?? []) as $cat)
-                            <option value="{{ $cat->id_categorie }}" @selected(request('categorie_id') == $cat->id_categorie)>{{ $cat->nom }}</option>
+                            <option
+                                value="{{ $cat->id_categorie }}"
+                                @selected(request('categorie_id') == $cat->id_categorie)
+                            >
+                                {{ $cat->nom }}
+                                ({{ $cat->produits_count ?? 0 }})
+                            </option>
                         @endforeach
                     </select>
                 </form>
@@ -209,7 +219,7 @@
                             <textarea name="description" class="modal-form-textarea" rows="4" style="border: none;"></textarea>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-4" style="padding: 20px;">
+                    <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
                         <div>
                             <label class="modal-form-label">Prix (€)</label>
                             <div class="modal-form-field-wrapper">
@@ -217,26 +227,41 @@
                             </div>
                         </div>
                         <div>
-                            <label class="modal-form-label">Stock</label>
-                            <div class="modal-form-field-wrapper">
-                                <input type="number" name="stock" min="0" class="modal-form-input" style="border: none;">
+                            <label class="modal-form-label" style="margin-bottom: 0.25rem;">
+                                <input type="checkbox" name="infinite_stock" id="infinite_stock" value="1" class="h-4 w-4" style="margin-right: 0.5rem;">
+                                Stock infini
+                            </label>
+                            <label class="modal-form-label" id="stock_label">Stock</label>
+                            <div class="modal-form-field-wrapper" style="margin-bottom: 0.5rem;">
+                                <input type="number" name="stock" id="stock_input" min="0" class="modal-form-input" style="border: none;">
                             </div>
-                        </div>
-                        <div>
+                            <label class="modal-form-label" id="stock_low_threshold_label">Seuil "stock faible"</label>
+                            <div class="modal-form-field-wrapper" style="margin-bottom: 0.5rem;">
+                                <input type="number" name="stock_low_threshold" id="stock_low_threshold" min="1" value="100" class="modal-form-input" style="border: none;">
+                            </div>
                             <label class="modal-form-label">PEGI (optionnel)</label>
                             <div class="modal-form-field-wrapper">
-                                <input type="text" name="pegi" class="modal-form-input" style="border: none;">
+                                <select name="pegi" class="modal-form-select" style="border: none;">
+                                    <option value="">Aucun</option>
+                                    <option value="images/pegi3.png">PEGI 3</option>
+                                    <option value="images/pegi7.png">PEGI 7</option>
+                                    <option value="images/pegi12.png">PEGI 12</option>
+                                    <option value="images/pegi16.png">PEGI 16</option>
+                                    <option value="images/pegi18.png">PEGI 18</option>
+                                </select>
                             </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4" style="padding: 20px;">
                         <div>
-                            <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Catégorie</label>
-                            <select name="categorie_id" class="w-full px-3 py-2 bg-white rounded border border-[#e3e3e0]" style="font-family: 'Minecrafter Alt', sans-serif;">
-                                @foreach(($categories ?? []) as $cat)
-                                    <option value="{{ $cat->id_categorie }}">{{ $cat->nom }}</option>
-                                @endforeach
-                            </select>
+                            <label class="modal-form-label">Catégorie</label>
+                            <div class="modal-form-field-wrapper">
+                                <select name="categorie_id" class="modal-form-select" style="border: none;">
+                                    @foreach(($categories ?? []) as $cat)
+                                        <option value="{{ $cat->id_categorie }}" @if(mb_strtolower(trim($cat->nom)) === mb_strtolower('Non catégorisé')) selected @endif>{{ $cat->nom }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-[#1b1b18] mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">Image</label>
@@ -264,14 +289,16 @@
             <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">Aucun produit disponible pour le moment.</p>
         @else
             {{-- Grille de produits --}}
-            <div class="Allproduits grid gap-6" style="gap: 2.5%; grid-template-columns: repeat(4, minmax(0, 1fr));">
+            <div class="Allproduits grid gap-6" style="gap: 2.5%; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.5rem;">
                 @foreach($produits as $produit)
                     @include('partials.product-card', [
                         'name' => $produit->nom,
                         'description' => $produit->description ?? '',
                         'price' => number_format($produit->prix, 2, ',', ' '),
                         'image' => $produit->image ? asset($produit->image) : asset('images/placeholder-product.png'),
-                        'productId' => $produit->id_produit
+                        'productId' => $produit->id_produit,
+                        'stock' => $produit->stock,
+                        'infiniteStock' => $produit->infinite_stock
                     ])
                 @endforeach
             </div>
@@ -280,6 +307,123 @@
 
     @push('scripts')
     <script>
+        function updateProductsFromUrl(url) {
+            return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (res) { return res.text(); })
+                .then(function (html) {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(html, 'text/html');
+                    var newGrid = doc.querySelector('.Allproduits');
+                    var newCount = doc.querySelector('.TextResult p');
+                    var grid = document.querySelector('.Allproduits');
+                    var count = document.querySelector('.TextResult p');
+                    if (newGrid && grid) {
+                        grid.innerHTML = newGrid.innerHTML;
+                    }
+                    if (newCount && count) {
+                        count.textContent = newCount.textContent;
+                    }
+                });
+        }
+
+        var searchForm = document.getElementById('product-search-form');
+        var searchInput = searchForm ? searchForm.querySelector('input[name="search"]') : null;
+        var categoryForm = document.getElementById('product-category-form');
+        var filterForm = document.querySelector('#filter-modal form[action*="produits.index"]');
+
+        if (searchForm) {
+            searchForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var params = new URLSearchParams(new FormData(searchForm));
+                var url = searchForm.action + '?' + params.toString();
+                updateProductsFromUrl(url);
+            });
+        }
+
+        if (searchInput) {
+            var tId;
+            searchInput.addEventListener('input', function () {
+                clearTimeout(tId);
+                var value = this.value || '';
+                tId = setTimeout(function () {
+                    var params = new URLSearchParams(new FormData(searchForm));
+                    var url = searchForm.action + '?' + params.toString();
+                    updateProductsFromUrl(url);
+                }, 250);
+            });
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
+
+        if (categoryForm) {
+            categoryForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var params = new URLSearchParams(new FormData(categoryForm));
+                var url = categoryForm.action + '?' + params.toString();
+                updateProductsFromUrl(url);
+            });
+        }
+
+        if (filterForm) {
+            filterForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var params = new URLSearchParams(new FormData(filterForm));
+                var url = filterForm.action + '?' + params.toString();
+                updateProductsFromUrl(url).then(function () {
+                    var filterModalEl = document.getElementById('filter-modal');
+                    if (filterModalEl) {
+                        filterModalEl.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Gestion du stock infini dans le formulaire d'ajout de produit
+        var infiniteCheckbox = document.getElementById('infinite_stock');
+        var stockInput = document.getElementById('stock_input');
+        var stockLowThresholdInput = document.getElementById('stock_low_threshold');
+        var stockLowThresholdLabel = document.getElementById('stock_low_threshold_label');
+        var stockLabel = document.getElementById('stock_label');
+
+        function updateStockInfiniteState() {
+            if (!infiniteCheckbox || !stockInput || !stockLowThresholdInput) {
+                return;
+            }
+            if (infiniteCheckbox.checked) {
+                stockInput.value = '';
+                stockInput.disabled = true;
+                stockLowThresholdInput.disabled = true;
+                stockInput.classList.add('modal-form-input-disabled');
+                stockLowThresholdInput.classList.add('modal-form-input-disabled');
+                if (stockLabel) {
+                    stockLabel.classList.add('modal-form-label-disabled');
+                }
+                if (stockLowThresholdLabel) {
+                    stockLowThresholdLabel.classList.add('modal-form-label-disabled');
+                }
+            } else {
+                stockInput.disabled = false;
+                stockLowThresholdInput.disabled = false;
+                stockInput.classList.remove('modal-form-input-disabled');
+                stockLowThresholdInput.classList.remove('modal-form-input-disabled');
+                if (stockLabel) {
+                    stockLabel.classList.remove('modal-form-label-disabled');
+                }
+                if (stockLowThresholdLabel) {
+                    stockLowThresholdLabel.classList.remove('modal-form-label-disabled');
+                }
+            }
+        }
+
+        if (infiniteCheckbox) {
+            infiniteCheckbox.addEventListener('change', updateStockInfiniteState);
+            updateStockInfiniteState();
+        }
+
         // Gestion de la popup de filtrage
         const openFilterBtn = document.getElementById('open-filter-btn');
         const closeFilterBtn = document.getElementById('close-filter-btn');

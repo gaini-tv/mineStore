@@ -70,7 +70,10 @@ class ProduitController extends Controller
         }
 
         $produits = $query->get();
-        $categories = Categorie::orderBy('nom')->get();
+
+        $categories = Categorie::withCount(['produits' => function ($q) {
+            $q->where('actif', true);
+        }])->orderBy('nom')->get();
 
         $canAddProduct = false;
 
@@ -84,16 +87,20 @@ class ProduitController extends Controller
             }
         }
 
+        $totalProduitsActifs = Produit::where('actif', true)->count();
+
         return view('produits.index', [
             'produits' => $produits,
             'categories' => $categories,
             'canAddProduct' => $canAddProduct,
+            'totalProduitsActifs' => $totalProduitsActifs,
         ]);
     }
 
     public function show($id)
     {
-        $produit = Produit::where('id_produit', $id)
+        $produit = Produit::with('categories')
+            ->where('id_produit', $id)
             ->where('actif', true)
             ->firstOrFail();
 
@@ -110,10 +117,31 @@ class ProduitController extends Controller
             ->limit(4)
             ->get();
 
+        $categories = Categorie::orderBy('nom')->get();
+
+        $canManageProduct = false;
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $allowedRoles = ['admin', 'owner', 'manager', 'product_manager'];
+
+            if (in_array($user->role, $allowedRoles, true)) {
+                if ($user->role === 'admin') {
+                    $canManageProduct = true;
+                } else {
+                    if ($user->entreprise_id && $produit->entreprise_id && $user->entreprise_id === $produit->entreprise_id) {
+                        $canManageProduct = true;
+                    }
+                }
+            }
+        }
+
         return view('produits.show', [
             'produit' => $produit,
             'commentaires' => $commentaires,
             'produitsSuggere' => $produitsSuggere,
+            'categories' => $categories,
+            'canManageProduct' => $canManageProduct,
         ]);
     }
 
@@ -148,13 +176,15 @@ class ProduitController extends Controller
             'description' => ['nullable', 'string'],
             'prix' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
+            'stock_low_threshold' => ['nullable', 'integer', 'min:1'],
             'reference' => ['required', 'string', 'max:255', 'unique:produits,reference'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'pegi' => ['nullable', 'string', 'max:255'],
+            'infinite_stock' => ['nullable', 'boolean'],
             'categorie_id' => ['required', 'exists:categories,id_categorie'],
         ]);
 
-        $imagePath = null;
+        $imagePath = 'images/logo.png';
 
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
@@ -175,6 +205,8 @@ class ProduitController extends Controller
         $produit->description = $data['description'] ?? null;
         $produit->prix = $data['prix'];
         $produit->stock = $data['stock'];
+        $produit->stock_low_threshold = $data['stock_low_threshold'] ?? 100;
+        $produit->infinite_stock = $request->boolean('infinite_stock');
         $produit->reference = $data['reference'];
         $produit->image = $imagePath;
         $produit->pegi = $data['pegi'] ?: null;
@@ -186,5 +218,125 @@ class ProduitController extends Controller
         $produit->categories()->attach($data['categorie_id']);
 
         return redirect()->route('produits.index')->with('success', 'Produit ajouté avec succès.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $allowedRoles = ['admin', 'owner', 'manager', 'product_manager'];
+
+        if (!in_array($user->role, $allowedRoles, true)) {
+            abort(403);
+        }
+
+        $produit = Produit::with('categories')->where('id_produit', $id)->firstOrFail();
+
+        if ($user->role !== 'admin') {
+            if (!$user->entreprise_id || !$produit->entreprise_id || $user->entreprise_id !== $produit->entreprise_id) {
+                abort(403);
+            }
+        }
+
+        $data = $request->validate([
+            'nom' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'prix' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'stock_low_threshold' => ['nullable', 'integer', 'min:1'],
+            'reference' => ['required', 'string', 'max:255', 'unique:produits,reference,' . $produit->id_produit . ',id_produit'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'pegi' => ['nullable', 'string', 'max:255'],
+            'infinite_stock' => ['nullable', 'boolean'],
+            'categorie_id' => ['required', 'exists:categories,id_categorie'],
+        ]);
+
+        $imagePath = $produit->image ?? 'images/logo.png';
+
+        if ($request->hasFile('image')) {
+            $protectedPrefix = 'images/produits/defaultdev/';
+
+            if (
+                $produit->image &&
+                $produit->image !== 'images/logo.png' &&
+                strpos($produit->image, $protectedPrefix) !== 0
+            ) {
+                $existingPath = public_path($produit->image);
+                if (is_file($existingPath)) {
+                    @unlink($existingPath);
+                }
+            }
+
+            $imageFile = $request->file('image');
+            $filename = uniqid('prod_') . '.' . $imageFile->getClientOriginalExtension();
+            $destination = public_path('images/produits');
+
+            if (!is_dir($destination)) {
+                mkdir($destination, 0755, true);
+            }
+
+            $imageFile->move($destination, $filename);
+
+            $imagePath = 'images/produits/' . $filename;
+        }
+
+        $produit->nom = $data['nom'];
+        $produit->description = $data['description'] ?? null;
+        $produit->prix = $data['prix'];
+        $produit->stock = $data['stock'];
+        $produit->stock_low_threshold = $data['stock_low_threshold'] ?? 100;
+        $produit->infinite_stock = $request->boolean('infinite_stock');
+        $produit->reference = $data['reference'];
+        $produit->image = $imagePath;
+        $produit->pegi = $data['pegi'] ?: null;
+        $produit->save();
+
+        $produit->categories()->sync([$data['categorie_id']]);
+
+        return redirect()->route('produits.show', $produit->id_produit)->with('success', 'Produit mis à jour avec succès.');
+    }
+
+    public function destroy($id)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $allowedRoles = ['admin', 'owner', 'manager', 'product_manager'];
+
+        if (!in_array($user->role, $allowedRoles, true)) {
+            abort(403);
+        }
+
+        $produit = Produit::where('id_produit', $id)->firstOrFail();
+
+        if ($user->role !== 'admin') {
+            if (!$user->entreprise_id || !$produit->entreprise_id || $user->entreprise_id !== $produit->entreprise_id) {
+                abort(403);
+            }
+        }
+
+        $protectedPrefix = 'images/produits/defaultdev/';
+
+        if (
+            $produit->image &&
+            $produit->image !== 'images/logo.png' &&
+            strpos($produit->image, $protectedPrefix) !== 0
+        ) {
+            $existingPath = public_path($produit->image);
+            if (is_file($existingPath)) {
+                @unlink($existingPath);
+            }
+        }
+
+        $produit->delete();
+
+        return redirect()->route('produits.index')->with('success', 'Produit supprimé avec succès.');
     }
 }

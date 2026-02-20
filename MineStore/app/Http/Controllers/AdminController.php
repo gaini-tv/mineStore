@@ -18,11 +18,41 @@ class AdminController extends Controller
         }
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->ensureAdmin();
 
-        $users = User::orderBy('nom')->get();
+        $usersQuery = User::query();
+
+        if ($search = $request->query('search')) {
+            $usersQuery->where(function ($q) use ($search) {
+                $q->where('prenom', 'like', '%' . $search . '%')
+                    ->orWhere('nom', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($filterRole = $request->query('filter_role')) {
+            $usersQuery->where('role', 'like', '%' . $filterRole . '%');
+        }
+        
+        $sort = $request->query('sort', 'name');
+        $direction = $request->query('direction', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        switch ($sort) {
+            case 'email':
+                $usersQuery->orderBy('email', $direction);
+                break;
+            case 'role':
+                $usersQuery->orderBy('role', $direction);
+                break;
+            case 'name':
+            default:
+                $usersQuery->orderBy('nom', $direction)->orderBy('prenom', $direction);
+                break;
+        }
+
+        $users = $usersQuery->get();
         $categories = Categorie::orderBy('nom')->get();
         $entreprises = Entreprise::where('statut', 'active')->orderBy('nom')->get();
         $demandesCreation = Entreprise::where('statut', 'pending')->orderBy('nom')->get();
@@ -45,10 +75,47 @@ class AdminController extends Controller
             'role' => 'required|in:user,admin,owner,manager,product_manager,stock_manager,editor',
         ]);
 
+        if ($user->email === 'minestore-Admin@gmail.com') {
+            return back();
+        }
+
         $user->role = $validated['role'];
         $user->save();
 
         return back()->with('success', 'Rôle mis à jour avec succès.');
+    }
+
+    public function updateUser(Request $request, User $user): RedirectResponse
+    {
+        $this->ensureAdmin();
+
+        if ($user->email === 'minestore-Admin@gmail.com') {
+            return back();
+        }
+
+        $validated = $request->validate([
+            'prenom' => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'role' => 'required|in:user,admin',
+        ]);
+
+        $user->update($validated);
+
+        return back()->with('success', 'Utilisateur mis à jour avec succès.');
+    }
+
+    public function destroyUser(User $user): RedirectResponse
+    {
+        $this->ensureAdmin();
+
+        if ($user->email === 'minestore-Admin@gmail.com') {
+            return back();
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'Utilisateur supprimé avec succès.');
     }
 
     public function approveEntreprise(Entreprise $entreprise): RedirectResponse
@@ -123,6 +190,10 @@ class AdminController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
+        if (mb_strtolower(trim($validated['nom'])) === mb_strtolower('Non catégorisé')) {
+            return back();
+        }
+
         Categorie::create($validated);
 
         return back()->with('success', 'Catégorie créée avec succès.');
@@ -131,6 +202,10 @@ class AdminController extends Controller
     public function updateCategory(Request $request, Categorie $categorie): RedirectResponse
     {
         $this->ensureAdmin();
+
+        if (mb_strtolower(trim($categorie->nom)) === mb_strtolower('Non catégorisé')) {
+            return back();
+        }
 
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
@@ -145,6 +220,24 @@ class AdminController extends Controller
     public function destroyCategory(Categorie $categorie): RedirectResponse
     {
         $this->ensureAdmin();
+
+        if (mb_strtolower(trim($categorie->nom)) === mb_strtolower('Non catégorisé')) {
+            return back();
+        }
+
+        $uncategorized = Categorie::whereRaw('LOWER(nom) = ?', [mb_strtolower('Non catégorisé')])->first();
+
+        if ($uncategorized) {
+            $produits = $categorie->produits()->get();
+
+            foreach ($produits as $produit) {
+                if (!$produit->categories()->where('categories.id_categorie', $uncategorized->id_categorie)->exists()) {
+                    $produit->categories()->attach($uncategorized->id_categorie);
+                }
+            }
+
+            $categorie->produits()->detach();
+        }
 
         $categorie->delete();
 
