@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entreprise;
+use App\Models\Categorie;
 use App\Models\Produit;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -105,6 +106,61 @@ class EntrepriseController extends Controller
         return redirect()->route('entreprise.index')->with('success', 'Membre ajouté à l’entreprise.');
     }
 
+    public function updateMemberRole(Request $request, User $member): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+        if (
+            !$user ||
+            !$user->entreprise ||
+            $user->role !== 'owner' ||
+            $user->entreprise->user_id !== $user->id ||
+            $member->entreprise_id !== $user->entreprise_id
+        ) {
+            abort(403);
+        }
+
+        if ($member->id === $user->id) {
+            return redirect()->route('entreprise.index')->withErrors([
+                'role' => 'Vous ne pouvez pas modifier votre propre rôle.',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'role' => 'required|in:manager,product_manager,stock_manager,editor',
+        ]);
+
+        $member->role = $validated['role'];
+        $member->save();
+
+        return redirect()->route('entreprise.index')->with('success', 'Rôle du membre mis à jour.');
+    }
+
+    public function removeMember(User $member): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+        if (
+            !$user ||
+            !$user->entreprise ||
+            $user->role !== 'owner' ||
+            $user->entreprise->user_id !== $user->id ||
+            $member->entreprise_id !== $user->entreprise_id
+        ) {
+            abort(403);
+        }
+
+        if ($member->id === $user->id) {
+            return redirect()->route('entreprise.index')->withErrors([
+                'member' => 'Vous ne pouvez pas vous retirer vous-même de l’entreprise.',
+            ]);
+        }
+
+        $member->role = 'user';
+        $member->entreprise_id = null;
+        $member->save();
+
+        return redirect()->route('entreprise.index')->with('success', 'Membre retiré de l’entreprise.');
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -116,11 +172,15 @@ class EntrepriseController extends Controller
 
         $produitsQuery = Produit::where('entreprise_id', $entreprise->id_entreprise);
         $produitsEnLigne = (clone $produitsQuery)->where('actif', true)->count();
+        $produits = (clone $produitsQuery)->orderBy('nom')->get();
 
         $ventes = DB::table('ligne_commandes')
             ->join('produits', 'ligne_commandes.produit_id', '=', 'produits.id_produit')
             ->where('produits.entreprise_id', $entreprise->id_entreprise)
-            ->selectRaw('SUM(ligne_commandes.quantité) as total_quantite, SUM(ligne_commandes.prix_TTC - ligne_commandes.prix_HT) as total_benefice')
+            ->selectRaw('
+                SUM(ligne_commandes.quantité) as total_quantite,
+                SUM(ligne_commandes.prix_HT * ligne_commandes.quantité) as total_benefice
+            ')
             ->first();
 
         $totalProduitsVendus = $ventes?->total_quantite ?? 0;
@@ -140,16 +200,109 @@ class EntrepriseController extends Controller
             $membresParRole[$role] = User::where('entreprise_id', $entreprise->id_entreprise)->where('role', $role)->count();
         }
 
-        $nombreArticles = 0;
+        $membres = User::where('entreprise_id', $entreprise->id_entreprise)
+            ->orderBy('prenom')
+            ->orderBy('nom')
+            ->get();
+
+        $articles = DB::table('articles')
+            ->join('asso_produit_article', 'articles.id_article', '=', 'asso_produit_article.article_id')
+            ->join('produits', 'asso_produit_article.produit_id', '=', 'produits.id_produit')
+            ->where('produits.entreprise_id', $entreprise->id_entreprise)
+            ->select('articles.*', 'produits.nom as produit_nom', 'produits.id_produit')
+            ->orderBy('articles.nom')
+            ->get();
+        $nombreArticles = $articles->count();
+
+        $userRole = $user->role;
+        $canManageProducts = in_array($userRole, ['owner', 'manager', 'product_manager'], true);
+        $canManageStocks = in_array($userRole, ['owner', 'manager', 'stock_manager'], true);
+        $categories = Categorie::orderBy('nom')->get();
 
         return view('entreprise.index', [
             'entreprise' => $entreprise,
             'produitsEnLigne' => $produitsEnLigne,
+            'produits' => $produits,
             'totalProduitsVendus' => $totalProduitsVendus,
             'meilleureVente' => $meilleureVente,
             'membresParRole' => $membresParRole,
             'nombreArticles' => $nombreArticles,
             'benefices' => $benefices,
+            'articles' => $articles,
+            'membres' => $membres,
+            'canManageProducts' => $canManageProducts,
+            'canManageStocks' => $canManageStocks,
+            'categories' => $categories,
         ]);
+    }
+
+    public function storeArticle(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user || !$user->entreprise || !in_array($user->role, ['owner','manager','editor'], true)) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'produit_id' => 'required|integer',
+        ]);
+
+        $produit = Produit::where('id_produit', $validated['produit_id'])
+            ->where('entreprise_id', $user->entreprise_id)
+            ->first();
+        if (!$produit) {
+            abort(403);
+        }
+
+        $articleId = DB::table('articles')->insertGetId([
+            'nom' => $validated['nom'],
+            'description' => $validated['description'] ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], 'id_article');
+
+        DB::table('asso_produit_article')->insert([
+            'produit_id' => $produit->id_produit,
+            'article_id' => $articleId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('entreprise.index')->with('success', 'Article ajouté.');
+    }
+
+    public function updateArticle(Request $request, int $id): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user || !$user->entreprise || !in_array($user->role, ['owner','manager','editor'], true)) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        DB::table('articles')->where('id_article', $id)->update([
+            'nom' => $validated['nom'],
+            'description' => $validated['description'] ?? null,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('entreprise.index')->with('success', 'Article modifié.');
+    }
+
+    public function destroyArticle(int $id): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user || !$user->entreprise || !in_array($user->role, ['owner','manager','editor'], true)) {
+            abort(403);
+        }
+
+        DB::table('articles')->where('id_article', $id)->delete();
+
+        return redirect()->route('entreprise.index')->with('success', 'Article supprimé.');
     }
 }

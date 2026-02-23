@@ -18,6 +18,7 @@ class Produit extends Model
         'stock',
         'stock_low_threshold',
         'infinite_stock',
+        'rupture_marketing',
         'reference',
         'actif',
         'date_creation',
@@ -33,6 +34,7 @@ class Produit extends Model
         'stock' => 'integer',
         'stock_low_threshold' => 'integer',
         'infinite_stock' => 'boolean',
+        'rupture_marketing' => 'boolean',
     ];
 
     public function entreprise()

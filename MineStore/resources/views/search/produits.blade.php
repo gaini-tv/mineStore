@@ -25,7 +25,10 @@
                         'description' => $produit->description ?? '',
                         'price' => number_format($produit->prix ?? 0, 2, ',', ' '),
                         'image' => $produit->image ?? asset('images/placeholder-product.png'),
-                        'productId' => $produit->id_produit
+                        'productId' => $produit->id_produit,
+                        'stock' => $produit->stock,
+                        'infiniteStock' => $produit->infinite_stock,
+                        'ruptureMarketing' => $produit->rupture_marketing ?? false
                     ])
                 @endforeach
             </div>

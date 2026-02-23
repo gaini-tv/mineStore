@@ -166,151 +166,193 @@
                             <h3 class="admin-subtitle">Entreprises créées</h3>
                             @if($entreprises->isEmpty())
                                 <p class="admin-card-meta">Aucune entreprise enregistrée pour le moment.</p>
-                            @else
-                                <ul class="admin-card-list">
-                                    @foreach($entreprises as $entreprise)
-                                        <li class="admin-card" onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='flex'" style="cursor: pointer;">
-                                            <div class="admin-card-title">{{ $entreprise->nom }}</div>
-                                            <div class="admin-card-meta">{{ $entreprise->email_contact }}</div>
-                                            <div class="admin-card-meta">{{ $entreprise->adresse }}</div>
-                                        </li>
-                                        <div id="entreprise-active-modal-{{ $entreprise->id_entreprise }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" style="display: none;">
-                                            <div class="admin-modal-content">
-                                                <h3 class="text-xl font-bold mb-3" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Détails de l’entreprise</h3>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Nom: {{ $entreprise->nom }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Email: {{ $entreprise->email_contact }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Adresse: {{ $entreprise->adresse }}</p>
-                                                @if($entreprise->description)
-                                                    <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Description: {{ $entreprise->description }}</p>
-                                                @endif
-                                                @if($entreprise->owner)
-                                                    <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Propriétaire: {{ $entreprise->owner->prenom }} {{ $entreprise->owner->nom }} ({{ $entreprise->owner->email }})</p>
-                                                @endif
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Créée le: {{ optional($entreprise->created_at)->format('d/m/Y H:i') }}</p>
-                                                <p class="mb-4" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Membres: {{ $entreprise->users()->count() }}</p>
-                                                <div class="text-right">
-                                                    <button type="button" class="admin-button" onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='none'">Fermer</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </ul>
+                            @endif
+                            @if($entreprises->isNotEmpty())
+                                <div class="admin-search-bar-wrapper" style="margin-top: 1rem;">
+                                    <label for="admin-entreprises-search" class="admin-card-meta">Recherche (entreprise, propriétaire, email)</label>
+                                    <input id="admin-entreprises-search" type="text" placeholder="Rechercher une entreprise..." class="admin-search-input">
+                                </div>
+                                <div class="admin-users-table-wrapper" style="max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
+                                    <table class="admin-table" id="admin-entreprises-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Entreprise</th>
+                                                <th>Propriétaire</th>
+                                                <th>Date de création</th>
+                                                <th>Membres</th>
+                                                <th>Produits</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-entreprises-tbody">
+                                            @foreach($entreprises as $entreprise)
+                                                @php
+                                                    $stats = ($entreprisesStats[$entreprise->id_entreprise] ?? ['membres'=>0,'produits'=>0,'benefices'=>0,'articles'=>0]);
+                                                    $owner = $entreprise->owner;
+                                                @endphp
+                                                <tr class="admin-entreprise-row"
+                                                    data-entreprise-id="{{ $entreprise->id_entreprise }}"
+                                                    data-entreprise-name="{{ $entreprise->nom }}"
+                                                    data-owner-name="{{ $owner ? ($owner->prenom.' '.$owner->nom) : '' }}"
+                                                    data-owner-email="{{ $owner ? $owner->email : '' }}"
+                                                >
+                                                    <td>{{ $entreprise->nom }}</td>
+                                                    <td>
+                                                        @if($owner)
+                                                            {{ $owner->prenom }} {{ $owner->nom }} ({{ $owner->email }})
+                                                        @else
+                                                            —
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ optional($entreprise->created_at)->format('d/m/Y H:i') }}</td>
+                                                    <td>{{ $stats['membres'] }}</td>
+                                                    <td>{{ $stats['produits'] }}</td>
+                                                    <td>
+                                                        <div class="admin-user-actions">
+                                                            <button
+                                                                type="button"
+                                                                class="admin-icon-button admin-icon-button-eye"
+                                                                onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='flex'"
+                                                                title="Voir l’entreprise"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                                                    <circle cx="12" cy="12" r="3"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             @endif
                         </div>
                         <div>
                             <h3 class="admin-subtitle">Demandes de création</h3>
                             @if($demandesCreation->isEmpty())
                                 <p class="admin-card-meta">Aucune demande de création en attente.</p>
-                            @else
-                                <ul class="admin-card-list">
-                                    @foreach($demandesCreation as $demande)
-                                        <li
-                                            class="admin-card admin-entreprise-demand-card"
-                                            data-entreprise-id="{{ $demande->id_entreprise }}"
-                                            onclick="document.getElementById('entreprise-demand-modal-{{ $demande->id_entreprise }}').style.display='flex'"
-                                            style="cursor: pointer;"
-                                        >
-                                            <div class="admin-card-title">{{ $demande->nom }}</div>
-                                            <div class="admin-card-meta">{{ $demande->email_contact }}</div>
-                                            <div class="admin-card-meta">{{ $demande->adresse }}</div>
-                                        </li>
-                                        <div id="entreprise-demand-modal-{{ $demande->id_entreprise }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" style="display: none;">
-                                            <div class="admin-modal-content">
-                                                <h3 class="text-xl font-bold mb-3" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Demande de création</h3>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Nom: {{ $demande->nom }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Email: {{ $demande->email_contact }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Adresse: {{ $demande->adresse }}</p>
-                                                @if($demande->description)
-                                                    <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Description: {{ $demande->description }}</p>
-                                                @endif
-                                                @if($demande->owner)
-                                                    <p class="mb-4" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Demandeur : {{ $demande->owner->prenom }} {{ $demande->owner->nom }} ({{ $demande->owner->email }})</p>
-                                                @endif
-                                                <div class="flex justify-end gap-2">
-                                                    <form
-                                                        action="{{ route('admin.entreprises.approve', $demande) }}"
-                                                        method="POST"
-                                                        class="admin-async-form"
-                                                        data-admin-action="entreprise-approve"
-                                                        data-entreprise-id="{{ $demande->id_entreprise }}"
-                                                    >
-                                                        @csrf
-                                                        <button type="submit" class="admin-button admin-button-primary">Accepter</button>
-                                                    </form>
-                                                    <form
-                                                        action="{{ route('admin.entreprises.refuse', $demande) }}"
-                                                        method="POST"
-                                                        class="admin-async-form"
-                                                        data-admin-action="entreprise-refuse"
-                                                        data-entreprise-id="{{ $demande->id_entreprise }}"
-                                                    >
-                                                        @csrf
-                                                        <button type="submit" class="admin-button admin-button-danger">Refuser</button>
-                                                    </form>
-                                                    <button type="button" class="admin-button" onclick="document.getElementById('entreprise-demand-modal-{{ $demande->id_entreprise }}').style.display='none'">Fermer</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </ul>
+                            @endif
+                            @if($demandesCreation->isNotEmpty())
+                                <div class="admin-users-table-wrapper" style="max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Entreprise</th>
+                                                <th>Propriétaire</th>
+                                                <th>Adresse</th>
+                                                <th>Tentatives</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($demandesCreation as $demande)
+                                                @php
+                                                    $owner = $demande->owner;
+                                                    $attempts = $owner ? ($pendingAttemptsByOwner[$owner->id] ?? 1) : 1;
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $demande->nom }}</td>
+                                                    <td>
+                                                        @if($owner)
+                                                            {{ $owner->prenom }} {{ $owner->nom }} ({{ $owner->email }})
+                                                        @else
+                                                            —
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $demande->adresse }}</td>
+                                                    <td>{{ $attempts }}</td>
+                                                    <td>
+                                                        <div class="admin-user-actions">
+                                                            <form action="{{ route('admin.entreprises.approve', $demande) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-eye" title="Accepter">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <path d="M20 6L9 17l-5-5"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                            <form action="{{ route('admin.entreprises.refuse', $demande) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Refuser">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <path d="M18 6L6 18"/>
+                                                                        <path d="M6 6l12 12"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             @endif
                         </div>
                         <div>
                             <h3 class="admin-subtitle">Demandes de suppression</h3>
                             @if($demandesSuppression->isEmpty())
                                 <p class="admin-card-meta">Aucune demande de suppression en attente.</p>
-                            @else
-                                <ul class="admin-card-list">
-                                    @foreach($demandesSuppression as $demande)
-                                        <li
-                                            class="admin-card admin-entreprise-delete-card"
-                                            data-entreprise-id="{{ $demande->id_entreprise }}"
-                                            onclick="document.getElementById('entreprise-delete-modal-{{ $demande->id_entreprise }}').style.display='flex'"
-                                            style="cursor: pointer;"
-                                        >
-                                            <div class="admin-card-title">{{ $demande->nom }}</div>
-                                            <div class="admin-card-meta">{{ $demande->email_contact }}</div>
-                                            <div class="admin-card-meta">{{ $demande->adresse }}</div>
-                                        </li>
-                                        <div id="entreprise-delete-modal-{{ $demande->id_entreprise }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" style="display: none;">
-                                            <div class="admin-modal-content">
-                                                <h3 class="text-xl font-bold mb-3" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Demande de suppression</h3>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Nom: {{ $demande->nom }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Email: {{ $demande->email_contact }}</p>
-                                                <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Adresse: {{ $demande->adresse }}</p>
-                                                @if($demande->description)
-                                                    <p class="mb-2" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Description: {{ $demande->description }}</p>
-                                                @endif
-                                                @if($demande->owner)
-                                                    <p class="mb-4" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Propriétaire : {{ $demande->owner->prenom }} {{ $demande->owner->nom }} ({{ $demande->owner->email }})</p>
-                                                @endif
-                                                <div class="flex justify-end gap-2">
-                                                    <form
-                                                        action="{{ route('admin.entreprises.approveDeletion', $demande) }}"
-                                                        method="POST"
-                                                        class="admin-async-form"
-                                                        data-admin-action="entreprise-approve-deletion"
-                                                        data-entreprise-id="{{ $demande->id_entreprise }}"
-                                                    >
-                                                        @csrf
-                                                        <button type="submit" class="admin-button admin-button-danger">Confirmer la suppression</button>
-                                                    </form>
-                                                    <form
-                                                        action="{{ route('admin.entreprises.cancelDeletion', $demande) }}"
-                                                        method="POST"
-                                                        class="admin-async-form"
-                                                        data-admin-action="entreprise-cancel-deletion"
-                                                        data-entreprise-id="{{ $demande->id_entreprise }}"
-                                                    >
-                                                        @csrf
-                                                        <button type="submit" class="admin-button admin-button-primary">Annuler la demande</button>
-                                                    </form>
-                                                    <button type="button" class="admin-button" onclick="document.getElementById('entreprise-delete-modal-{{ $demande->id_entreprise }}').style.display='none'">Fermer</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </ul>
+                            @endif
+                            @if($demandesSuppression->isNotEmpty())
+                                <div class="admin-users-table-wrapper" style="max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Entreprise</th>
+                                                <th>Propriétaire</th>
+                                                <th>Membres</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($demandesSuppression as $demande)
+                                                @php
+                                                    $owner = $demande->owner;
+                                                    $membresCount = $demande->users()->count();
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $demande->nom }}</td>
+                                                    <td>
+                                                        @if($owner)
+                                                            {{ $owner->prenom }} {{ $owner->nom }} ({{ $owner->email }})
+                                                        @else
+                                                            —
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $membresCount }}</td>
+                                                    <td>
+                                                        <div class="admin-user-actions">
+                                                            <form action="{{ route('admin.entreprises.approveDeletion', $demande) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Accepter la suppression">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <polyline points="3 6 5 6 21 6"/>
+                                                                        <path d="M19 6l-1 14H6L5 6"/>
+                                                                        <path d="M10 11v6"/>
+                                                                        <path d="M14 11v6"/>
+                                                                        <path d="M9 6V4h6v2"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                            <form action="{{ route('admin.entreprises.cancelDeletion', $demande) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-eye" title="Refuser la suppression">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                                                        <circle cx="12" cy="12" r="3"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -433,57 +475,79 @@
                 </div>
                 <section class="admin-section">
                     <div class="admin-category-layout">
-                        <div class="admin-category-list">
+                        <div class="admin-category-table-wrapper">
                             <h3 class="admin-subtitle">Catégories existantes</h3>
                             @if($categories->isEmpty())
                                 <p class="admin-card-meta">Aucune catégorie enregistrée.</p>
                             @else
-                                <div class="admin-card-list">
-                                    @foreach($categories as $categorie)
-                                        @php
-                                            $isUncategorized = mb_strtolower(trim($categorie->nom)) === mb_strtolower('Non catégorisé');
-                                        @endphp
-                                        <div class="admin-card">
-                                            <form action="{{ route('admin.categories.update', $categorie) }}" method="POST" class="space-y-2">
-                                                @csrf
-                                                @method('PUT')
-                                                <input
-                                                    type="text"
-                                                    name="nom"
-                                                    value="{{ $categorie->nom }}"
-                                                    class="admin-input"
-                                                    @if($isUncategorized) disabled @else required @endif
+                                <div class="admin-users-table-wrapper">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom</th>
+                                                <th>Description</th>
+                                                <th>Produits associés</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($categories as $categorie)
+                                                @php
+                                                    $isUncategorized = mb_strtolower(trim($categorie->nom)) === mb_strtolower('Non catégorisé');
+                                                @endphp
+                                                <tr
+                                                    class="admin-category-row"
+                                                    data-category-id="{{ $categorie->id_categorie }}"
+                                                    data-category-name="{{ $categorie->nom }}"
+                                                    data-category-description="{{ $categorie->description }}"
                                                 >
-                                                <textarea
-                                                    name="description"
-                                                    class="admin-textarea"
-                                                    rows="2"
-                                                    @if($isUncategorized) disabled @endif
-                                                >{{ $categorie->description }}</textarea>
-                                                <div class="admin-category-card-actions">
-                                                    @unless($isUncategorized)
-                                                        <button type="submit" class="admin-button admin-button-primary">
-                                                            Mettre à jour
-                                                        </button>
-                                                    @endunless
-                                                </div>
-                                            </form>
-                                            @unless($isUncategorized)
-                                                <form
-                                                    action="{{ route('admin.categories.destroy', $categorie) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Supprimer cette catégorie ?');"
-                                                    class="mt-2 text-right"
-                                                >
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="admin-icon-button admin-icon-button-delete">
-                                                        <img src="{{ asset('images/cross.png') }}" alt="Supprimer">
-                                                    </button>
-                                                </form>
-                                            @endunless
-                                        </div>
-                                    @endforeach
+                                                    <td>{{ $categorie->nom }}</td>
+                                                    <td>{{ $categorie->description }}</td>
+                                                    <td>{{ $categorie->produits_count ?? 0 }}</td>
+                                                    <td>
+                                                        <div class="admin-user-actions">
+                                                            <button
+                                                                type="button"
+                                                                class="admin-icon-button admin-icon-button-eye"
+                                                                onclick="openCategoryModal({{ $categorie->id_categorie }});"
+                                                                title="Voir / modifier"
+                                                                @if($isUncategorized) disabled @endif
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                                                    <circle cx="12" cy="12" r="3"/>
+                                                                </svg>
+                                                            </button>
+                                                            @unless($isUncategorized)
+                                                                <form
+                                                                    action="{{ route('admin.categories.destroy', $categorie) }}"
+                                                                    method="POST"
+                                                                    class="admin-async-form"
+                                                                    onsubmit="return confirm('Supprimer cette catégorie ?');"
+                                                                >
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button
+                                                                        type="submit"
+                                                                        class="admin-icon-button admin-icon-button-delete"
+                                                                        title="Supprimer la catégorie"
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                            <polyline points="3 6 5 6 21 6"/>
+                                                                            <path d="M19 6l-1 14H6L5 6"/>
+                                                                            <path d="M10 11v6"/>
+                                                                            <path d="M14 11v6"/>
+                                                                            <path d="M9 6V4h6v2"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </form>
+                                                            @endunless
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             @endif
                         </div>
@@ -514,6 +578,107 @@
                     </div>
                 </section>
             </div>
+
+            @foreach($categories as $categorie)
+                @php
+                    $isUncategorized = mb_strtolower(trim($categorie->nom)) === mb_strtolower('Non catégorisé');
+                @endphp
+                @unless($isUncategorized)
+                    <div id="category-modal-{{ $categorie->id_categorie }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+                        <div class="admin-modal-content">
+                            <h3 class="text-xl font-bold mb-3" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">Modifier la catégorie</h3>
+                            <form action="{{ route('admin.categories.update', $categorie) }}" method="POST" class="space-y-4 admin-category-edit-form">
+                                @csrf
+                                @method('PUT')
+                                <div>
+                                    <label class="admin-card-meta">Nom</label>
+                                    <input
+                                        type="text"
+                                        name="nom"
+                                        value="{{ $categorie->nom }}"
+                                        class="admin-input"
+                                        data-original-value="{{ $categorie->nom }}"
+                                        required
+                                    >
+                                </div>
+                                <div>
+                                    <label class="admin-card-meta">Description</label>
+                                    <textarea
+                                        name="description"
+                                        class="admin-textarea"
+                                        rows="3"
+                                        data-original-value="{{ $categorie->description }}"
+                                    >{{ $categorie->description }}</textarea>
+                                </div>
+                                <div class="flex justify-end gap-2">
+                                    <button type="button" class="admin-button" onclick="closeCategoryModal({{ $categorie->id_categorie }});">
+                                        Annuler
+                                    </button>
+                                    <button type="submit" class="admin-button admin-button-primary admin-category-confirm-btn">
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endunless
+            @endforeach
+
+            <div class="admin-section-block">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-header-title">
+                        Filtrage des mots interdits
+                    </h2>
+                </div>
+                <section class="admin-section">
+                    <form
+                        id="admin-bannedwords-add-form"
+                        action="{{ route('admin.banned-words.store') }}"
+                        method="POST"
+                        class="admin-bannedword-add-form"
+                    >
+                        @csrf
+                        <input
+                            type="text"
+                            name="word"
+                            class="admin-input admin-bannedword-input"
+                            placeholder="Nouveau mot à bannir (ex : Putain)"
+                            required
+                        >
+                        <button type="submit" class="admin-button admin-button-primary">
+                            <img src="{{ asset('images/plus.png') }}" alt="" class="admin-button-icon">
+                            <span>Ajouter</span>
+                        </button>
+                    </form>
+
+                    <div class="admin-bannedwords-container">
+                        <h3 class="admin-subtitle">Mots bannis actuels</h3>
+                        <div id="admin-bannedwords-tags">
+                            @if($bannedWords->isEmpty())
+                                <p class="admin-card-meta">Aucun mot banni configuré pour le moment.</p>
+                            @else
+                                <div class="admin-bannedwords-tags">
+                                    @foreach($bannedWords as $bannedWord)
+                                        <form
+                                            action="{{ route('admin.banned-words.destroy', $bannedWord) }}"
+                                            method="POST"
+                                            class="admin-bannedword-tag admin-bannedword-delete-form"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+                                            <span>{{ $bannedWord->word }}</span>
+                                            <button type="submit" class="admin-bannedword-remove-btn" title="Supprimer">
+                                                ×
+                                            </button>
+                                        </form>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </section>
+            </div>
+
         </div>
     </div>
 
@@ -587,7 +752,7 @@
             }
         })();
 
-        document.querySelectorAll('[id^="entreprise-active-modal-"], [id^="entreprise-demand-modal-"], [id^="entreprise-delete-modal-"]').forEach(function(modal) {
+        document.querySelectorAll('[id^="entreprise-active-modal-"]').forEach(function(modal) {
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     modal.style.display = 'none';
@@ -640,6 +805,35 @@
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     resetUserModalForm(modal);
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        function openCategoryModal(categoryId) {
+            const modal = document.getElementById('category-modal-' + categoryId);
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeCategoryModal(categoryId) {
+            const modal = document.getElementById('category-modal-' + categoryId);
+            if (modal) {
+                const form = modal.querySelector('.admin-category-edit-form');
+                if (form) {
+                    form.querySelectorAll('input[name="nom"], textarea[name="description"]').forEach(function(field) {
+                        const original = field.dataset.originalValue ?? '';
+                        field.value = original;
+                    });
+                }
+                modal.classList.add('hidden');
+            }
+        }
+
+        document.querySelectorAll('[id^="category-modal-"]').forEach(function(modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
                     modal.classList.add('hidden');
                 }
             });
@@ -909,6 +1103,182 @@
                     });
                 });
             });
+        })();
+
+        (function () {
+            const table = document.getElementById('admin-entreprises-table');
+            const tbody = document.getElementById('admin-entreprises-tbody');
+            const input = document.getElementById('admin-entreprises-search');
+            if (!table || !tbody || !input) return;
+
+            function normalize(s) {
+                return (s || '').toString().toLowerCase();
+            }
+
+            function filter() {
+                const q = normalize(input.value);
+                const rows = tbody.querySelectorAll('tr.admin-entreprise-row');
+                rows.forEach(function (row) {
+                    const name = normalize(row.getAttribute('data-entreprise-name'));
+                    const owner = normalize(row.getAttribute('data-owner-name'));
+                    const email = normalize(row.getAttribute('data-owner-email'));
+                    const match = !q || name.includes(q) || owner.includes(q) || email.includes(q);
+                    row.style.display = match ? '' : 'none';
+                });
+            }
+
+            input.addEventListener('input', filter);
+        })();
+
+        (function () {
+            const addForm = document.getElementById('admin-bannedwords-add-form');
+            const tagsContainer = document.getElementById('admin-bannedwords-tags');
+
+            if (!addForm || !tagsContainer) {
+                return;
+            }
+
+            const input = addForm.querySelector('input[name="word"]');
+            const submitButtons = addForm.querySelectorAll('button[type="submit"]');
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+
+            function setAddFormDisabled(disabled) {
+                if (input) {
+                    input.disabled = disabled;
+                }
+                submitButtons.forEach(function(btn) {
+                    btn.disabled = disabled;
+                    if (disabled) {
+                        btn.style.opacity = '0.7';
+                        btn.style.cursor = 'not-allowed';
+                    } else {
+                        btn.style.opacity = '';
+                        btn.style.cursor = '';
+                    }
+                });
+            }
+
+            function buildTagsHtml(bannedWords) {
+                if (!bannedWords || !bannedWords.length) {
+                    return '<p class="admin-card-meta">Aucun mot banni configuré pour le moment.</p>';
+                }
+
+                const items = bannedWords.map(function(bannedWord) {
+                    const word = String(bannedWord.word || '');
+                    const safeWord = word.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const url = '/admin/banned-words/' + bannedWord.id;
+
+                    return '' +
+                        '<form ' +
+                            'action="' + url + '" ' +
+                            'method="POST" ' +
+                            'class="admin-bannedword-tag admin-bannedword-delete-form"' +
+                        '>' +
+                            '<span>' + safeWord + '</span>' +
+                            '<button type="submit" class="admin-bannedword-remove-btn" title="Supprimer">' +
+                                '×' +
+                            '</button>' +
+                        '</form>';
+                }).join('');
+
+                return '<div class="admin-bannedwords-tags">' + items + '</div>';
+            }
+
+            function attachDeleteHandlers() {
+                const deleteForms = tagsContainer.querySelectorAll('.admin-bannedword-delete-form');
+
+                deleteForms.forEach(function(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const action = form.getAttribute('action');
+                        if (!action) {
+                            return;
+                        }
+
+                        if (!window.confirm('Supprimer ce mot banni ?')) {
+                            return;
+                        }
+
+                        const headers = {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        };
+
+                        if (csrfMeta && csrfMeta.content) {
+                            headers['X-CSRF-TOKEN'] = csrfMeta.content;
+                        }
+
+                        fetch(action, {
+                            method: 'DELETE',
+                            headers: headers
+                        }).then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('Request failed');
+                            }
+                            return response.json();
+                        }).then(function(data) {
+                            if (data && Array.isArray(data.bannedWords)) {
+                                tagsContainer.innerHTML = buildTagsHtml(data.bannedWords);
+                                attachDeleteHandlers();
+                            }
+                        }).catch(function() {
+                            showAdminToast('Une erreur est survenue.', 'error');
+                        });
+                    });
+                });
+            }
+
+            addForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (!input || !input.value.trim()) {
+                    return;
+                }
+
+                const action = addForm.getAttribute('action');
+                if (!action) {
+                    return;
+                }
+
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                };
+
+                if (csrfMeta && csrfMeta.content) {
+                    headers['X-CSRF-TOKEN'] = csrfMeta.content;
+                }
+
+                const formData = new FormData(addForm);
+
+                setAddFormDisabled(true);
+
+                fetch(action, {
+                    method: addForm.method || 'POST',
+                    headers: headers,
+                    body: formData
+                }).then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+                    return response.json();
+                }).then(function(data) {
+                    if (data && Array.isArray(data.bannedWords)) {
+                        input.value = '';
+                        tagsContainer.innerHTML = buildTagsHtml(data.bannedWords);
+                        attachDeleteHandlers();
+                    }
+                }).catch(function() {
+                    showAdminToast('Une erreur est survenue.', 'error');
+                }).finally(function() {
+                    setAddFormDisabled(false);
+                });
+            });
+
+            attachDeleteHandlers();
         })();
     </script>
     @endpush

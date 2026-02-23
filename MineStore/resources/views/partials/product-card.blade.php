@@ -27,25 +27,43 @@
     @php
         $stockValue = $stock ?? null;
         $infiniteStock = $infiniteStock ?? false;
-        $isOutOfStock = !$infiniteStock && $stockValue !== null && $stockValue <= 0;
+        $ruptureMarketing = $ruptureMarketing ?? false;
+        $isOutOfStock = $ruptureMarketing || (!$infiniteStock && $stockValue !== null && $stockValue <= 0);
     @endphp
 
-    <div class="p-4 bg-white bas-card">
+    <div class="p-4 bg-white bas-card" style="text-align: center;">
         <h3 class="font-semibold text-[#1b1b18] mb-2" style="margin-top: 1rem; font-size: 1.25rem; font-family: 'Minecrafter Alt', sans-serif;color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">
             {{ $name ?? 'Nom du produit' }}
         </h3>
 
         {{-- Bouton Ajouter au panier avec image de fond --}}
-        <div class="relative mx-auto btn-panier-wrapper {{ $isOutOfStock ? 'btn-panier-wrapper-disabled' : '' }}" style="display: inline-block; width: 63.33%;">
-            <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block" style="display: block;">
-            <button type="button"
-                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier {{ $isOutOfStock ? 'btn-panier-disabled' : '' }}"
-                    style="background: transparent; border: none; padding: 0;{{ $isOutOfStock ? ' cursor: not-allowed;' : ' cursor: pointer;' }}"
-                    @if($isOutOfStock) disabled @endif>
-                <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); margin-left: -15%;">
-                    AJOUTER AU PANIER
-                </span>
-            </button>
-        </div>
+        @if(isset($productId))
+            <form method="POST" action="{{ route('panier.add', $productId) }}" style="display: inline-block; width: 100%;">
+                @csrf
+                <div class="relative mx-auto btn-panier-wrapper {{ $isOutOfStock ? 'btn-panier-wrapper-disabled' : '' }}" style="display: inline-block; width: 63.33%;">
+                    <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block" style="display: block;">
+                    <button type="submit"
+                            class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier {{ $isOutOfStock ? 'btn-panier-disabled' : '' }}"
+                            style="background: transparent; border: none; padding: 0;{{ $isOutOfStock ? ' cursor: not-allowed;' : ' cursor: pointer;' }}"
+                            @if($isOutOfStock) disabled @endif>
+                        <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); margin-left: -15%;">
+                            AJOUTER AU PANIER
+                        </span>
+                    </button>
+                </div>
+            </form>
+        @else
+            <div class="relative mx-auto btn-panier-wrapper btn-panier-wrapper-disabled" style="display: inline-block; width: 63.33%;">
+                <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block" style="display: block;">
+                <button type="button"
+                        class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier btn-panier-disabled"
+                        style="background: transparent; border: none; padding: 0; cursor: not-allowed;"
+                        disabled>
+                    <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); margin-left: -15%;">
+                        AJOUTER AU PANIER
+                    </span>
+                </button>
+            </div>
+        @endif
     </div>
 </div>

@@ -42,7 +42,10 @@
                         'description' => $produit->description ?? '',
                         'price' => number_format($produit->prix, 2, ',', ' '),
                         'image' => $produit->image ? asset($produit->image) : asset('images/placeholder-product.png'),
-                        'productId' => $produit->id_produit
+                        'productId' => $produit->id_produit,
+                        'stock' => $produit->stock,
+                        'infiniteStock' => $produit->infinite_stock,
+                        'ruptureMarketing' => $produit->rupture_marketing ?? false
                     ])
                 @endforeach
             </div>
@@ -60,20 +63,23 @@
                 <div class="flex-1 flex flex-col gap-4" id="jeu-content" style="opacity: 1; transform: translateY(0); display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 40px; max-width: 50%; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
                     <h3 class="text-2xl md:text-3xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif; opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-titre">{{ $jeux[0]->nom }}</h3>
                     <p class="text-[#706f6c] text-base md:text-lg" style="opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-description">{{ $jeux[0]->description }}</p>
-                    <div class="flex flex-col sm:flex-row gap-4 mt-4" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 20px;">
+                        <div class="flex flex-col sm:flex-row gap-4 mt-4" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 20px;">
                         {{-- Bouton Ajouter au panier --}}
-                        <div class="relative" style="display: inline-block; width: 200px;">
-                            <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
-                            <button type="button"
-                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
-                                    style="background: transparent; border: none; cursor: pointer; padding: 0;">
-                                <span class="text-white font-bold text-xs md:text-sm" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
-                                    AJOUTER AU PANIER
-                                </span>
-                            </button>
-                        </div>
+                        <form method="POST" action="{{ route('panier.add', $jeux[0]->id_produit) }}" style="display: inline-block;">
+                            @csrf
+                            <div class="relative btn-panier-wrapper" style="display: inline-block; width: 200px;">
+                                <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
+                                <button type="submit"
+                                        class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                        style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                                    <span class="text-white font-bold text-xs md:text-sm" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                        AJOUTER AU PANIER
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
                         {{-- Bouton En savoir plus --}}
-                        <div class="relative" style="display: inline-block; width: 200px;">
+                        <div class="relative btn-panier-wrapper" style="display: inline-block; width: 200px;">
                             <img src="{{ asset('images/btnESP.png') }}" alt="" class="w-full h-auto block">
                             <a href="{{ route('produits.show', $jeux[0]->id_produit) }}" id="btn-en-savoir-plus"
                                class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"

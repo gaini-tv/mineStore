@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Categorie;
 use App\Models\Entreprise;
+use App\Models\BannedWord;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -53,10 +56,54 @@ class AdminController extends Controller
         }
 
         $users = $usersQuery->get();
-        $categories = Categorie::orderBy('nom')->get();
+        $categories = Categorie::withCount('produits')->orderBy('nom')->get();
+        $bannedWords = BannedWord::orderBy('word')->get();
         $entreprises = Entreprise::where('statut', 'active')->orderBy('nom')->get();
         $demandesCreation = Entreprise::where('statut', 'pending')->orderBy('nom')->get();
         $demandesSuppression = Entreprise::where('statut', 'deletion_requested')->orderBy('nom')->get();
+
+        $membresCounts = DB::table('users')
+            ->select('entreprise_id', DB::raw('COUNT(*) as cnt'))
+            ->whereNotNull('entreprise_id')
+            ->groupBy('entreprise_id')
+            ->pluck('cnt', 'entreprise_id');
+
+        $produitsCounts = DB::table('produits')
+            ->select('entreprise_id', DB::raw('COUNT(*) as cnt'))
+            ->whereNotNull('entreprise_id')
+            ->groupBy('entreprise_id')
+            ->pluck('cnt', 'entreprise_id');
+
+        $beneficesByEntreprise = DB::table('ligne_commandes')
+            ->join('produits', 'ligne_commandes.produit_id', '=', 'produits.id_produit')
+            ->select('produits.entreprise_id', DB::raw('SUM(ligne_commandes.prix_HT * ligne_commandes.quantité) as total_benefice'))
+            ->whereNotNull('produits.entreprise_id')
+            ->groupBy('produits.entreprise_id')
+            ->pluck('total_benefice', 'entreprise_id');
+
+        $articlesCounts = DB::table('asso_produit_article')
+            ->join('produits', 'asso_produit_article.produit_id', '=', 'produits.id_produit')
+            ->select('produits.entreprise_id', DB::raw('COUNT(DISTINCT asso_produit_article.article_id) as cnt'))
+            ->whereNotNull('produits.entreprise_id')
+            ->groupBy('produits.entreprise_id')
+            ->pluck('cnt', 'entreprise_id');
+
+        $entreprisesStats = [];
+        foreach ($entreprises as $e) {
+            $id = $e->id_entreprise;
+            $entreprisesStats[$id] = [
+                'membres' => (int)($membresCounts[$id] ?? 0),
+                'produits' => (int)($produitsCounts[$id] ?? 0),
+                'benefices' => (float)($beneficesByEntreprise[$id] ?? 0),
+                'articles' => (int)($articlesCounts[$id] ?? 0),
+            ];
+        }
+
+        $pendingAttemptsByOwner = DB::table('entreprises')
+            ->select('user_id', DB::raw('COUNT(*) as attempts'))
+            ->where('statut', 'pending')
+            ->groupBy('user_id')
+            ->pluck('attempts', 'user_id');
 
         return view('admin.index', [
             'users' => $users,
@@ -64,6 +111,9 @@ class AdminController extends Controller
             'entreprises' => $entreprises,
             'demandesCreation' => $demandesCreation,
             'demandesSuppression' => $demandesSuppression,
+            'bannedWords' => $bannedWords,
+            'entreprisesStats' => $entreprisesStats,
+            'pendingAttemptsByOwner' => $pendingAttemptsByOwner,
         ]);
     }
 
@@ -242,5 +292,53 @@ class AdminController extends Controller
         $categorie->delete();
 
         return back()->with('success', 'Catégorie supprimée avec succès.');
+    }
+
+    public function storeBannedWord(Request $request): JsonResponse|RedirectResponse
+    {
+        $this->ensureAdmin();
+
+        $validated = $request->validate([
+            'word' => 'required|string|max:255',
+        ]);
+
+        $word = trim($validated['word']);
+
+        if ($word === '') {
+            return back();
+        }
+
+        $normalized = mb_strtolower($word);
+
+        BannedWord::firstOrCreate([
+            'word' => $normalized,
+        ]);
+
+        $bannedWords = BannedWord::orderBy('word')->get(['id', 'word']);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'bannedWords' => $bannedWords,
+            ]);
+        }
+
+        return back()->with('success', 'Mot banni ajouté avec succès.');
+    }
+
+    public function destroyBannedWord(Request $request, BannedWord $bannedWord): JsonResponse|RedirectResponse
+    {
+        $this->ensureAdmin();
+
+        $bannedWord->delete();
+
+        $bannedWords = BannedWord::orderBy('word')->get(['id', 'word']);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'bannedWords' => $bannedWords,
+            ]);
+        }
+
+        return back()->with('success', 'Mot banni supprimé avec succès.');
     }
 }

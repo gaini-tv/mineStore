@@ -68,7 +68,7 @@
 
             <div class="flex justify-end" style="grid-column: 3; grid-row: 1; justify-self: end;">
                 @if($canAddProduct ?? false)
-                    <div class="relative" style="display: inline-block; width: 300px; margin: 0;">
+                    <div class="relative btn-panier-wrapper" style="display: inline-block; width: 300px; margin: 0;">
                         <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
                         <button type="button"
                                 id="open-add-product-btn"
@@ -298,7 +298,8 @@
                         'image' => $produit->image ? asset($produit->image) : asset('images/placeholder-product.png'),
                         'productId' => $produit->id_produit,
                         'stock' => $produit->stock,
-                        'infiniteStock' => $produit->infinite_stock
+                        'infiniteStock' => $produit->infinite_stock,
+                        'ruptureMarketing' => $produit->rupture_marketing ?? false
                     ])
                 @endforeach
             </div>

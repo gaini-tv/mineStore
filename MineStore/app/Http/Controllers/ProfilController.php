@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Entreprise;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,8 +16,45 @@ class ProfilController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+
+        $commandes = null;
+        $commandesLignes = [];
+
+        if ($user) {
+            $commandes = DB::table('commandes')
+                ->where('user_id', $user->id)
+                ->orderByDesc('date_commande')
+                ->limit(10)
+                ->get();
+
+            if ($commandes && $commandes->count() > 0) {
+                $ids = $commandes->pluck('id_commande')->all();
+
+                $lignes = DB::table('ligne_commandes')
+                    ->join('produits', 'ligne_commandes.produit_id', '=', 'produits.id_produit')
+                    ->whereIn('commande_id', $ids)
+                    ->select(
+                        'ligne_commandes.id_ligneCommande',
+                        'ligne_commandes.quantité',
+                        'ligne_commandes.prix_TTC',
+                        'ligne_commandes.prix_HT',
+                        'ligne_commandes.commande_id',
+                        'produits.nom'
+                    )
+                    ->get();
+
+                foreach ($lignes as $ligne) {
+                    $commandesLignes[$ligne->commande_id][] = $ligne;
+                }
+            }
+        }
+
         return response()
-            ->view('profil.index')
+            ->view('profil.index', [
+                'userCommandes' => $commandes,
+                'userCommandesLignes' => $commandesLignes,
+            ])
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');

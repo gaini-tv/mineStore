@@ -108,7 +108,42 @@
 }
 
 .admin-table tbody tr:hover {
-    background-color: #e5f6e5;
+    background-color: #fee2e2;
+}
+
+.profil-orders-table-wrapper .admin-table thead th {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+    0 0 10px rgba(16, 185, 129, 0.8), 0 0 20px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.profil-orders-table-wrapper .admin-table tbody tr:hover {
+    background-color: #dcfce7;
+}
+
+.admin-icon-button-print {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.admin-icon-button-print:hover {
+    opacity: 0.9;
+}
+
+@media print {
+    body > *:not(.print-order-root) {
+        display: none !important;
+    }
+
+    .print-order-root {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .print-order-root button {
+        display: none !important;
+    }
 }
 
 .admin-form-inline {
@@ -186,7 +221,7 @@
 }
 
 .btn-panier-wrapper:hover {
-    transform: scale(1.03);
+    transform: scale(1.1);
 }
 
 .btn-panier-wrapper-disabled,
@@ -395,8 +430,6 @@ a.navbar-link:hover {
     transition: all 0.3s ease;
 }
 
-
-
 .product-card img {
     transition: transform 0.3s ease;
 }
@@ -423,6 +456,27 @@ a.navbar-link:hover {
     justify-content: center;
     align-items: center;
     row-gap: 20px;}
+
+.btn-panier-wrapper {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-panier-wrapper:hover {
+    transform: scale(1.1);
+}
+
+.btn-panier-wrapper-disabled:hover {
+    transform: none;
+}
+
+.btn-scale {
+    transition: transform 0.2s ease;
+    transform-origin: center;
+}
+
+.btn-scale:hover {
+    transform: scale(1.1);
+}
 
 /* Curseur personnalisé pour tout le site */
 * {

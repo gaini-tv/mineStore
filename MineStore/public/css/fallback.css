@@ -513,6 +513,30 @@ svg {
     padding-right: 1rem;
 }
 
+/* Boutons panier et effets de scale */
+.btn-panier-wrapper {
+    display: inline-block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform-origin: center;
+}
+
+.btn-panier-wrapper:hover {
+    transform: scale(1.1);
+}
+
+.btn-panier-wrapper-disabled:hover {
+    transform: none;
+}
+
+.btn-scale {
+    transition: transform 0.2s ease;
+    transform-origin: center;
+}
+
+.btn-scale:hover {
+    transform: scale(1.1);
+}
+
 /* Responsive */
 @media (min-width: 768px) {
     .md\:flex {

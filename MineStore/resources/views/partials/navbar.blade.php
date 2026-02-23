@@ -62,6 +62,7 @@
                         </button>
                         <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#e3e3e0] py-1 z-50">
                             <a href="{{ route('profil.index') }}" class="block px-4 py-2 text-[1.2rem] text-[#1b1b18] hover:bg-[#e3e3e0] transition-colors" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>
+                            <a href="{{ route('panier.index') }}" class="block px-4 py-2 text-[1.2rem] text-[#1b1b18] hover:bg-[#e3e3e0] transition-colors" style="font-family: 'Minecrafter Alt', sans-serif;">Mon panier</a>
                             @if (Route::has('dashboard'))
                                 <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-[1.2rem] text-[#1b1b18] hover:bg-[#e3e3e0] transition-colors" style="font-family: 'Minecrafter Alt', sans-serif;">Tableau de bord</a>
                             @endif
@@ -101,6 +102,7 @@
                 @endif
                 @if (auth()->check())
                     <a href="{{ route('profil.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>
+                    <a href="{{ route('panier.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Mon panier</a>
                 @endif
             </div>
         </div>

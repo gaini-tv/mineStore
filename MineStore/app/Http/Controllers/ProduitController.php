@@ -181,6 +181,7 @@ class ProduitController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'pegi' => ['nullable', 'string', 'max:255'],
             'infinite_stock' => ['nullable', 'boolean'],
+            'rupture_marketing' => ['nullable', 'boolean'],
             'categorie_id' => ['required', 'exists:categories,id_categorie'],
         ]);
 
@@ -207,6 +208,7 @@ class ProduitController extends Controller
         $produit->stock = $data['stock'];
         $produit->stock_low_threshold = $data['stock_low_threshold'] ?? 100;
         $produit->infinite_stock = $request->boolean('infinite_stock');
+        $produit->rupture_marketing = $request->boolean('rupture_marketing');
         $produit->reference = $data['reference'];
         $produit->image = $imagePath;
         $produit->pegi = $data['pegi'] ?: null;
@@ -252,6 +254,7 @@ class ProduitController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'pegi' => ['nullable', 'string', 'max:255'],
             'infinite_stock' => ['nullable', 'boolean'],
+            'rupture_marketing' => ['nullable', 'boolean'],
             'categorie_id' => ['required', 'exists:categories,id_categorie'],
         ]);
 
@@ -290,6 +293,7 @@ class ProduitController extends Controller
         $produit->stock = $data['stock'];
         $produit->stock_low_threshold = $data['stock_low_threshold'] ?? 100;
         $produit->infinite_stock = $request->boolean('infinite_stock');
+        $produit->rupture_marketing = $request->boolean('rupture_marketing');
         $produit->reference = $data['reference'];
         $produit->image = $imagePath;
         $produit->pegi = $data['pegi'] ?: null;
@@ -338,5 +342,55 @@ class ProduitController extends Controller
         $produit->delete();
 
         return redirect()->route('produits.index')->with('success', 'Produit supprimé avec succès.');
+    }
+
+    public function updateStockSettings(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(403);
+        }
+        $allowedRoles = ['admin', 'owner', 'manager', 'stock_manager'];
+        if (!in_array($user->role, $allowedRoles, true)) {
+            abort(403);
+        }
+
+        $produit = Produit::where('id_produit', $id)->firstOrFail();
+        if ($user->role !== 'admin') {
+            if (!$user->entreprise_id || !$produit->entreprise_id || $user->entreprise_id !== $produit->entreprise_id) {
+                abort(403);
+            }
+        }
+
+        $data = $request->validate([
+            'stock' => ['nullable', 'integer', 'min:0'],
+            'stock_low_threshold' => ['nullable', 'integer', 'min:1'],
+            'infinite_stock' => ['nullable', 'boolean'],
+            'rupture_marketing' => ['nullable', 'boolean'],
+        ]);
+
+        if (array_key_exists('stock', $data)) {
+            $produit->stock = $data['stock'];
+        }
+        if (array_key_exists('stock_low_threshold', $data)) {
+            $produit->stock_low_threshold = $data['stock_low_threshold'];
+        }
+        if (array_key_exists('infinite_stock', $data)) {
+            $produit->infinite_stock = $request->boolean('infinite_stock');
+        }
+        if (array_key_exists('rupture_marketing', $data)) {
+            $produit->rupture_marketing = $request->boolean('rupture_marketing');
+        }
+
+        $produit->save();
+
+        return response()->json([
+            'success' => true,
+            'id' => $produit->id_produit,
+            'stock' => $produit->stock,
+            'stock_low_threshold' => $produit->stock_low_threshold,
+            'infinite_stock' => $produit->infinite_stock,
+            'rupture_marketing' => $produit->rupture_marketing,
+        ]);
     }
 }

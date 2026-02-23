@@ -11,8 +11,13 @@
         $stockValue = $produit->stock;
         $lowThreshold = $produit->stock_low_threshold ?? 100;
         $infiniteStock = $produit->infinite_stock ?? false;
+        $ruptureMarketing = $produit->rupture_marketing ?? false;
 
-        if ($infiniteStock) {
+        if ($ruptureMarketing) {
+            $stockStatusLabel = 'Rupture de stock';
+            $stockStatusColor = '#f44336';
+            $isOutOfStock = true;
+        } elseif ($infiniteStock) {
             $stockStatusLabel = 'En stock';
             $stockStatusColor = '#5baa47';
             $isOutOfStock = false;
@@ -79,29 +84,32 @@
 
                     {{-- Bouton Ajouter au panier avec actions de gestion --}}
                     <div class="relative mb-4" style="position: relative; width: 100%; display: flex; align-items: flex-end; gap: 16px;">
-                        <div class="relative btn-panier-wrapper {{ $isOutOfStock ? 'btn-panier-wrapper-disabled' : '' }}" style="display: inline-block; width: 300px;">
-                            <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
-                            <button type="button"
-                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier {{ $isOutOfStock ? 'btn-panier-disabled' : '' }}"
-                                    style="background: transparent; border: none; padding: 0;"
-                                    @if($isOutOfStock) disabled @endif>
-                                <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
-                                    AJOUTER AU PANIER
-                                </span>
-                            </button>
-                        </div>
+                        <form method="POST" action="{{ route('panier.add', $produit->id_produit) }}">
+                            @csrf
+                            <div class="relative btn-panier-wrapper {{ $isOutOfStock ? 'btn-panier-wrapper-disabled' : '' }}" style="display: inline-block; width: 300px;">
+                                <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
+                                <button type="submit"
+                                        class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200 btn-panier {{ $isOutOfStock ? 'btn-panier-disabled' : '' }}"
+                                        style="background: transparent; border: none; padding: 0;"
+                                        @if($isOutOfStock) disabled @endif>
+                                    <span class="text-white font-bold" style="font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                        AJOUTER AU PANIER
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
                         
                         @if($canManageProduct ?? false)
                             <div class="flex gap-3">
                                 <button type="button"
                                         id="open-edit-product-btn"
-                                        class="px-4 py-2"
+                                        class="px-4 py-2 btn-scale"
                                         style="background-color: #5baa47; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #3f7c33; cursor: pointer;">
                                     Modifier le produit
                                 </button>
                                 <button type="button"
                                         id="open-delete-product-btn"
-                                        class="px-4 py-2"
+                                        class="px-4 py-2 btn-scale"
                                         style="background-color: #b91c1c; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #7f1d1d; cursor: pointer;">
                                     Supprimer
                                 </button>
@@ -141,56 +149,75 @@
 
             {{-- Formulaire d'ajout de commentaire --}}
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
-                        Laisser un commentaire
-                    </h3>
-                    {{-- Notation par étoiles --}}
-                    <div class="flex gap-2 items-center" id="star-rating">
-                        @for($i = 1; $i <= 5; $i++)
-                            <button type="button" class="star-button cursor-pointer" data-rating="{{ $i }}">
-                                <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
-                                     alt="Étoile" 
-                                     class="star-image"
-                                     style="opacity: 0.3; width: 60px; height: 60px;">
-                            </button>
-                        @endfor
+                @auth
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
+                            Laisser un commentaire
+                        </h3>
+                        {{-- Notation par étoiles --}}
+                        <div class="flex gap-2 items-center" id="star-rating">
+                            @for($i = 1; $i <= 5; $i++)
+                                <button type="button" class="star-button cursor-pointer" data-rating="{{ $i }}">
+                                    <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
+                                         alt="Étoile" 
+                                         class="star-image"
+                                         style="opacity: 0.3; width: 60px; height: 60px;">
+                                </button>
+                            @endfor
+                        </div>
                     </div>
-                </div>
-                <form action="{{ route('commentaires.store', $produit->id_produit) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="note" id="note-value" value="" required>
-                    <p class="text-red-500 text-sm mt-1 hidden" id="note-error">Veuillez sélectionner une note en cliquant sur les étoiles.</p>
-                    @error('note')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
-                    {{-- Commentaire --}}
-                    <div class="mb-4">
-                        <label for="contenu" class="block text-sm font-medium text-gray-700 mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">
-                            Votre commentaire
-                        </label>
-                        <textarea name="contenu" id="contenu" rows="4" 
-                                  class="w-full px-4 py-2 focus:outline-none"
-                                  style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0; min-height: 100px;"
-                                  placeholder="Écrivez votre commentaire ici..." required></textarea>
-                        @error('contenu')
+                    <form action="{{ route('commentaires.store', $produit->id_produit) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="note" id="note-value" value="" required>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="note-error">Veuillez sélectionner une note en cliquant sur les étoiles.</p>
+                        @error('note')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
 
-                    {{-- Bouton soumettre --}}
+                        {{-- Commentaire --}}
+                        <div class="mb-4">
+                            <label for="contenu" class="block text-sm font-medium text-gray-700 mb-2" style="font-family: 'Minecrafter Alt', sans-serif;">
+                                Votre commentaire
+                            </label>
+                            <textarea name="contenu" id="contenu" rows="4" 
+                                      class="w-full px-4 py-2 focus:outline-none"
+                                      style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0; min-height: 100px;"
+                                      placeholder="Écrivez votre commentaire ici..." required></textarea>
+                            @error('contenu')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Bouton soumettre --}}
+                        <div class="relative" style="display: inline-block; width: 200px;">
+                            <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block" id="btn-image">
+                            <button type="submit" id="submit-comment-btn"
+                                    class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                    style="background: transparent; border: none; cursor: not-allowed; padding: 0; opacity: 0.5;" disabled>
+                                <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                    Envoyer
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    <h3 class="text-xl font-bold mb-4" style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;">
+                        Laisser un commentaire
+                    </h3>
+                    <p class="text-gray-700 mb-4" style="font-family: 'Minecrafter Alt', sans-serif;">
+                        Vous devez être connecté pour laisser un commentaire.
+                    </p>
                     <div class="relative" style="display: inline-block; width: 200px;">
-                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block" id="btn-image">
-                        <button type="submit" id="submit-comment-btn"
-                                class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
-                                style="background: transparent; border: none; cursor: not-allowed; padding: 0; opacity: 0.5;" disabled>
+                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
+                        <a href="{{ route('login') }}"
+                           class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                           style="background: transparent; border: none; padding: 0; text-decoration: none;">
                             <span class="text-white font-bold text-base md:text-lg" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
-                                Envoyer
+                                Se connecter
                             </span>
-                        </button>
+                        </a>
                     </div>
-                </form>
+                @endauth
             </div>
 
             {{-- Section commentaires avec menu déroulant --}}
@@ -245,12 +272,25 @@
                                             </div>
                                         </div>
                                         {{-- Affichage des étoiles --}}
-                                        <div class="flex gap-1 items-center ml-4">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
-                                                     alt="Étoile" 
-                                                     style="opacity: {{ $i <= ($commentaire->note ?? 0) ? '1.0' : '0.3' }}; width: 40px; height: 40px;">
-                                            @endfor
+                                        <div class="flex items-center ml-4 gap-3">
+                                            <div class="flex gap-1 items-center">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <img src="https://minecraft.wiki/images/Nether_Star.gif?fb01f&format=original" 
+                                                         alt="Étoile" 
+                                                         style="opacity: {{ $i <= ($commentaire->note ?? 0) ? '1.0' : '0.3' }}; width: 40px; height: 40px;">
+                                                @endfor
+                                            </div>
+                                            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->id() === $commentaire->user_id))
+                                                <form action="{{ route('commentaires.destroy', $commentaire->id_commentaire) }}" method="POST" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="px-3 py-1 text-sm"
+                                                            style="background-color: #dc2626; color: #ffffff; font-family: 'Minecrafter Alt', sans-serif; border: 2px solid #7f1d1d; border-radius: 0.25rem; cursor: pointer;">
+                                                        Supprimer
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </div>
                                     <p class="text-gray-700" style="text-align: justify;">

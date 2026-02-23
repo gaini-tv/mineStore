@@ -204,3 +204,157 @@
 .entreprise-textarea {
     resize: vertical;
 }
+
+/* Table styles for Entreprise page (duplicated from profile table, tailored) */
+.entreprise-search-container {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.entreprise-search-input {
+    max-width: 320px;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.entreprise-search-input:focus {
+    outline: none;
+    border-color: #5baa47;
+    box-shadow: 0 0 0 1px #5baa47, 0 1px 2px rgba(15, 23, 42, 0.1);
+}
+
+.entreprise-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.entreprise-table th,
+.entreprise-table td {
+    text-align: left;
+    padding: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entreprise-table thead tr {
+    border-bottom: 1px solid #e3e3e0;
+}
+
+.entreprise-table tbody tr {
+    border-bottom: 1px solid #f0f0ed;
+}
+
+.entreprise-table thead th {
+    background-color: #111827;
+    color: #e5e7eb;
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(16, 185, 129, 0.8), 0 0 20px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.entreprise-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.entreprise-table tbody tr:nth-child(even) {
+    background-color: #f3f4f6;
+}
+
+.entreprise-table tbody tr:hover {
+    background-color: #dcfce7;
+}
+
+.entreprise-table-wrapper {
+    overflow: auto;
+    max-height: 420px;
+}
+
+.entreprise-table-row {
+    cursor: default;
+}
+
+.entreprise-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.entreprise-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 2px solid #5baa47;
+    object-fit: contain;
+    background-color: #f9fafb;
+}
+
+.entreprise-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    color: #ffffff;
+    background-color: #1b1b18;
+}
+
+.entreprise-icon-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.entreprise-icon-button-view {
+    background-color: #16a34a;
+}
+
+.entreprise-icon-button-print {
+    background-color: #15803d;
+}
+
+.entreprise-icon-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.entreprise-sortable-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.entreprise-sort-icon {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+/* Fixed width columns for Entreprise tables */
+/* Produits table column widths */
+#entreprise-products-table col:nth-child(1) { width: 240px; }
+#entreprise-products-table col:nth-child(2) { width: 180px; }
+#entreprise-products-table col:nth-child(3) { width: 120px; }
+#entreprise-products-table col:nth-child(4) { width: 100px; }
+#entreprise-products-table col:nth-child(5) { width: 140px; }
+#entreprise-products-table col:nth-child(6) { width: 140px; }
+
+/* Stocks table column widths */
+#entreprise-stocks-table col:nth-child(1) { width: 240px; }
+#entreprise-stocks-table col:nth-child(2) { width: 180px; }
+#entreprise-stocks-table col:nth-child(3) { width: 140px; }
+#entreprise-stocks-table col:nth-child(4) { width: 120px; }
+#entreprise-stocks-table col:nth-child(5) { width: 80px; }
+#entreprise-stocks-table col:nth-child(6) { width: 90px; }
+#entreprise-stocks-table col:nth-child(7) { width: 160px; }
