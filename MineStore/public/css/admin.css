@@ -211,11 +211,14 @@
 /* Modales Administration */
 .admin-modal-content {
     width: 700px;
+    max-width: 100%;
     padding: 20px;
     background-color: #fee2e2;
     border: 2px solid #dc2626;
     border-radius: 0.5rem;
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.6), 0 0 30px rgba(239, 68, 68, 0.4);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .admin-section-header-icon img {
     width: 2.75rem;
@@ -294,8 +297,9 @@
 
 .admin-users-table-wrapper {
     overflow-x: auto;
-    max-height: 600px;
     overflow-y: auto;
+    max-height: 600px;
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-user-row {
@@ -467,5 +471,133 @@
 
 .admin-toast-error {
     border-left: 4px solid #f97373;
+}
+
+/* Admin - responsive complet */
+@media (max-width: 768px) {
+    .admin-page {
+        max-width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    .admin-banner-title {
+        font-size: 2rem;
+    }
+    .admin-section-header-title {
+        font-size: 1.25rem;
+    }
+    .admin-section {
+        padding: 1rem;
+    }
+    .admin-grid {
+        gap: 1.5rem;
+    }
+    .admin-search-input {
+        max-width: 100%;
+    }
+    .admin-search-bar-wrapper {
+        margin-bottom: 0.75rem;
+    }
+    .admin-table {
+        min-width: 500px;
+        font-size: 0.8rem;
+    }
+    .admin-table th,
+    .admin-table td {
+        padding: 0.4rem;
+    }
+    .admin-users-table-wrapper {
+        max-height: 400px;
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+    .admin-modal-content {
+        width: calc(100% - 1rem);
+        max-width: 100%;
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+    .admin-user-modal-container {
+        max-width: 100%;
+        margin: 0.5rem;
+    }
+    .modal-form-backdrop {
+        padding: 0.5rem;
+        align-items: flex-start;
+    }
+    .modal-form-backdrop .modal-form-container {
+        max-width: 100%;
+    }
+    .admin-user-modal-title {
+        font-size: 1.25rem;
+    }
+    .admin-category-form-card {
+        padding: 1rem;
+    }
+    .admin-bannedword-add-form {
+        flex-wrap: wrap;
+    }
+    .admin-bannedword-input {
+        width: 100%;
+        min-width: 0;
+    }
+    .admin-bannedwords-container {
+        padding: 1rem;
+    }
+    .admin-section-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .admin-icon-button {
+        width: 28px;
+        height: 28px;
+    }
+    .admin-icon-button svg {
+        width: 16px;
+        height: 16px;
+    }
+    .admin-user-actions {
+        gap: 0.35rem;
+    }
+    .admin-user-modal-container .modal-form-footer {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .admin-user-modal-container .modal-form-footer button {
+        flex: 1;
+        min-width: 120px;
+    }
+    .admin-form-inline {
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 480px) {
+    .admin-page {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .admin-banner-title {
+        font-size: 1.5rem;
+    }
+    .admin-section-header-title {
+        font-size: 1.1rem;
+    }
+    .admin-table {
+        min-width: 380px;
+        font-size: 0.75rem;
+    }
+    .admin-table th,
+    .admin-table td {
+        padding: 0.3rem;
+    }
+    .admin-toast-container {
+        left: 0.5rem;
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+    .admin-toast {
+        min-width: 0;
+        max-width: 100%;
+    }
 }
 

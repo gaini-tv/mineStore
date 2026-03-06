@@ -4,6 +4,15 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
+    <style>
+        /* Page produit - responsive à partir de 766px */
+        @media (max-width: 766px) {
+            .produit-show-info { grid-template-columns: 1fr !important; }
+            .produit-show-image { grid-column: 1 !important; order: 1; }
+            .produit-show-details { grid-column: 1 !important; order: 2; margin-right: 0 !important; }
+            .produit-selection-client { display: none !important; }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -38,9 +47,9 @@
 
     <div class="container mx-auto px-4 py-8" style="padding-top: 200px;">
         <div class="bg-white rounded-lg shadow-md overflow-hidden" style="width: 100%;">
-            <div class="info" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem;">
+            <div class="info produit-show-info" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 2rem;">
                 {{-- Image du produit --}}
-                <div class="flex items-center justify-center p-8 bg-gray-50" style="grid-column: 1;">
+                <div class="produit-show-image flex items-center justify-center p-8 bg-gray-50" style="grid-column: 1;">
                     <img src="{{ $produit->image ? asset($produit->image) : asset('images/placeholder-product.png') }}"
                          alt="{{ $produit->nom }}"
                          class="transition-all duration-300 hover:scale-105 hover:opacity-90 cursor-pointer"
@@ -48,7 +57,7 @@
                 </div>
 
                 {{-- Informations du produit --}}
-                <div class="p-8 flex flex-col justify-center relative" style="grid-column: 2 / 4; margin-right: 4rem; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: flex-start; row-gap: 30px;">
+                <div class="produit-show-details p-8 flex flex-col justify-center relative" style="grid-column: 2 / 4; margin-right: 4rem; display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: flex-start; row-gap: 30px;">
                     {{-- Bouton Retour --}}
                     <a href="{{ route('produits.index') }}" 
                        class="transition-colors duration-200 inline-flex items-center gap-2" style="color: #5baa47;">
@@ -450,9 +459,9 @@
             </div>
         @endif
 
-        {{-- Section Sélectionné pour vous --}}
+        {{-- Section Sélectionné pour vous (masquée à partir de 766px) --}}
         @if(isset($produitsSuggere) && $produitsSuggere->count() > 0)
-            <div class="mt-12 pt-12 pb-12" style="padding-left: 50px; padding-right: 50px;">
+            <div class="produit-selection-client mt-12 pt-12 pb-12" style="padding-left: 50px; padding-right: 50px;">
                 <h2 class="text-3xl font-bold text-white mb-6" style="font-family: 'Minecrafter Alt', sans-serif; padding-bottom: 50px; padding-top: 50px; align-items: center; display: flex; justify-content: center; align-content: center; flex-wrap: nowrap; flex-direction: row; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">
                     Selectionne pour vous
                 </h2>

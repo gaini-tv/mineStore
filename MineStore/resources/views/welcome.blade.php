@@ -58,14 +58,23 @@
             <div class="mb-6" style="padding: 65px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
                 <h2 class="text-3xl font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);">Nos jeux</h2>
             </div>
-            <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row items-center gap-6 p-6 relative" style="min-height: 500px; max-width: 100%;">
-                {{-- Contenu à gauche --}}
-                <div class="flex-1 flex flex-col gap-4" id="jeu-content" style="opacity: 1; transform: translateY(0); display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 40px; max-width: 50%; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
-                    <h3 class="text-2xl md:text-3xl font-bold text-[#1b1b18]" style="font-family: 'Minecrafter Alt', sans-serif; opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-titre">{{ $jeux[0]->nom }}</h3>
-                    <p class="text-[#706f6c] text-base md:text-lg" style="opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-description">{{ $jeux[0]->description }}</p>
+            <div class="jeux-main bg-white rounded-lg shadow-md overflow-hidden flex flex-col items-center gap-6 p-6 relative" style="min-height: 500px; max-width: 100%;">
+                {{-- Flèches slider (visibles uniquement en dessous de 1328px) --}}
+                @if($jeux->count() > 1)
+                    <button type="button" id="jeu-slider-prev" class="jeux-slider-arrows absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-[#1b1b18]/80 hover:bg-[#1b1b18] text-white flex items-center justify-center transition-all shadow-lg" aria-label="Jeu précédent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button type="button" id="jeu-slider-next" class="jeux-slider-arrows absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-[#1b1b18]/80 hover:bg-[#1b1b18] text-white flex items-center justify-center transition-all shadow-lg" aria-label="Jeu suivant">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                @endif
+                {{-- Contenu à gauche / centré --}}
+                <div class="flex-1 flex flex-col gap-4 jeux-content-block" id="jeu-content" style="opacity: 1; transform: translateY(0); display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 40px; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+                    <h3 class="text-2xl md:text-3xl font-bold text-[#1b1b18] text-center" style="font-family: 'Minecrafter Alt', sans-serif; opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-titre">{{ $jeux[0]->nom }}</h3>
+                    <p class="text-[#706f6c] text-base md:text-lg text-center" style="opacity: 1; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);" id="jeu-description">{{ $jeux[0]->description }}</p>
                         <div class="flex flex-col sm:flex-row gap-4 mt-4" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: center; justify-content: center; align-items: center; row-gap: 20px;">
                         {{-- Bouton Ajouter au panier --}}
-                        <form method="POST" action="{{ route('panier.add', $jeux[0]->id_produit) }}" style="display: inline-block;">
+                        <form method="POST" action="{{ route('panier.add', $jeux[0]->id_produit) }}" id="jeu-form-panier" style="display: inline-block;">
                             @csrf
                             <div class="relative btn-panier-wrapper" style="display: inline-block; width: 200px;">
                                 <img src="{{ asset('images/btnpanier.png') }}" alt="" class="w-full h-auto block">
@@ -91,8 +100,8 @@
                         </div>
                     </div>
                 </div>
-                {{-- Images empilées à droite --}}
-                <div class="flex-shrink-0 w-full md:w-1/3 lg:w-1/4 relative" style="min-height: 800px; max-width: 50%;">
+                {{-- Images empilées à droite (masquées en dessous de 1328px) --}}
+                <div class="jeux-images-container flex-shrink-0 w-full md:w-1/3 lg:w-1/4 relative" style="min-height: 800px; max-width: 50%;">
                     {{-- Carte du fond (cliquable) - Image du jeu suivant - À droite, décalée vers le bas, 60% de la taille --}}
                     <div class="absolute cursor-pointer transition-all duration-300 hover:scale-105 flex items-start justify-start" 
                          style="left: 50%; top: 15%; z-index: 1;"
@@ -256,6 +265,12 @@
                             btnEnSavoirPlus.href = '/produits/' + jeu.id;
                         }
                         
+                        // Mettre à jour le formulaire panier
+                        const formPanier = document.getElementById('jeu-form-panier');
+                        if (formPanier && jeu.id) {
+                            formPanier.action = '{{ url("/panier/ajouter") }}/' + jeu.id;
+                        }
+                        
                         // Mettre à jour les cartes avec transition
                         updateCartes();
                         
@@ -300,6 +315,22 @@
                 
                 // Initialiser les cartes
                 updateCartes();
+                
+                // Slider arrows (visible en dessous de 1328px)
+                const btnPrev = document.getElementById('jeu-slider-prev');
+                const btnNext = document.getElementById('jeu-slider-next');
+                if (btnPrev) {
+                    btnPrev.addEventListener('click', function() {
+                        const prevIndex = (currentJeuIndex - 1 + jeuxData.length) % jeuxData.length;
+                        changerJeu(prevIndex);
+                    });
+                }
+                if (btnNext) {
+                    btnNext.addEventListener('click', function() {
+                        const nextIndex = (currentJeuIndex + 1) % jeuxData.length;
+                        changerJeu(nextIndex);
+                    });
+                }
             });
         </script>
     @endif

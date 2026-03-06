@@ -91,6 +91,7 @@
 
 .profil-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .profil-table-row {
@@ -385,4 +386,91 @@
 .profil-orders-card {
     max-height: 700px;
     overflow-y: auto;
+}
+
+/* Profil - responsive */
+@media (max-width: 768px) {
+    .profil-layout {
+        max-width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .profil-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            "profil-avatar"
+            "profil-infos"
+            "profil-entreprise";
+        gap: 1.5rem;
+    }
+    .profil-main-right {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .profil-grid-infos .rounded-lg.shadow-md,
+    .profil-orders-card {
+        padding: 1rem !important;
+    }
+    .profil-actions-row {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    .profil-actions-row .profil-btn-wrapper-sm {
+        width: 100%;
+        max-width: 100%;
+    }
+    .profil-btn-wrapper-sm {
+        width: 100%;
+        max-width: 280px;
+    }
+    .profil-btn-wrapper-md {
+        width: 100%;
+        max-width: 100%;
+    }
+    .profil-grid-avatar h1.profil-minecrafter-text {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    .profil-name-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .profil-banner-title {
+        font-size: 2rem;
+    }
+    .profil-avatar-image {
+        width: 5rem;
+        height: 5rem;
+    }
+    .profil-avatar-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .profil-grid-entreprise {
+        margin-top: 0;
+        padding: 1rem !important;
+    }
+    .profil-table {
+        min-width: 360px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profil-avatar-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .profil-table {
+        min-width: 320px;
+    }
+    .profil-table th,
+    .profil-table td {
+        padding: 0.35rem;
+        font-size: 0.75rem;
+    }
+    .profil-page-container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
 }
