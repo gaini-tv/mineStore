@@ -1,0 +1,388 @@
+/* Styles spécifiques à la page profil */
+
+.profil-field-group {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.profil-alert-container {
+    max-width: 40rem;
+    margin: 0 auto 1.5rem auto;
+    padding: 0 1rem;
+}
+
+.profil-alert {
+    position: relative;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border-radius: 0.375rem;
+    font-family: 'Minecrafter Alt', sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.profil-alert-success {
+    background-color: #dcfce7;
+    border: 1px solid #22c55e;
+    color: #166534;
+}
+
+.profil-alert-error {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #991b1b;
+}
+
+.profil-alert-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+}
+
+.profil-page-container {
+    padding-top: 0px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.profil-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+}
+
+.profil-table th,
+.profil-table td {
+    text-align: left;
+    padding: 0.5rem;
+}
+
+.profil-table thead tr {
+    border-bottom: 1px solid #e3e3e0;
+}
+
+.profil-table tbody tr {
+    border-bottom: 1px solid #f0f0ed;
+}
+
+.profil-table thead th {
+    background-color: #111827;
+    color: #e5e7eb;
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(16, 185, 129, 0.8), 0 0 20px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.profil-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.profil-table tbody tr:nth-child(even) {
+    background-color: #f3f4f6;
+}
+
+.profil-table tbody tr:hover {
+    background-color: #dcfce7;
+}
+
+.profil-table-wrapper {
+    overflow-x: auto;
+}
+
+.profil-table-row {
+    cursor: default;
+}
+
+.profil-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.profil-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    color: #ffffff;
+    background-color: #1b1b18;
+}
+
+.profil-icon-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.profil-icon-button-view {
+    background-color: #16a34a;
+}
+
+.profil-icon-button-print {
+    background-color: #15803d;
+}
+
+.profil-icon-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.profil-avatar-modal-container {
+    padding: 20px;
+}
+
+.profil-avatar-title {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.profil-avatar-option {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border: none;
+}
+
+.profil-avatar-option-inner {
+    width: 100%;
+    height: 100%;
+}
+
+.profil-avatar-option-selected {
+    border: 2px solid #5baa47;
+}
+
+.profil-btn-wrapper-sm {
+    display: inline-block;
+    width: 200px;
+}
+
+.profil-btn-wrapper-md {
+    display: inline-block;
+    width: 280px;
+}
+
+.profil-btn-image-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.profil-link-no-underline {
+    text-decoration: none;
+}
+
+.profil-btn-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.profil-minecrafter-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-scale-110 {
+    transition: transform 0.2s ease;
+}
+
+.profil-scale-110:hover {
+    transform: scale(1.1);
+}
+
+.profil-password-modal-container {
+    max-width: 600px;
+}
+
+.profil-modal-input-borderless {
+    border: none;
+}
+
+.profil-main-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.profil-main-left {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.profil-main-right {
+    width: auto;
+    margin-right: 2rem;
+    margin-left: 2rem;
+}
+
+.profil-avatar-image {
+    object-fit: cover;
+}
+
+.profil-orders-section {
+    width: 100%;
+    margin-top: 24px;
+}
+
+.profil-no-order-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-auth-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    row-gap: 20px;
+}
+
+.profil-input-wrapper {
+    background-image: url('/images/searchbar.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 0;
+}
+
+.profil-input-control {
+    font-family: 'Minecrafter Alt', sans-serif;
+    border-radius: 0;
+    border: none;
+    color: white;
+}
+
+.profil-overlay-disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.profil-remember-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-link-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-helper-text {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-role-badge {
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.profil-role-user {
+    background-color: #5baa47;
+}
+
+.profil-role-admin {
+    background-color: #e63946;
+}
+
+.profil-role-owner {
+    background-color: #457b9d;
+}
+
+.profil-role-manager {
+    background-color: #1d3557;
+}
+
+.profil-role-product_manager {
+    background-color: #a8dadc;
+}
+
+.profil-role-stock_manager {
+    background-color: #ffb703;
+}
+
+.profil-role-editor {
+    background-color: #8d99ae;
+}
+
+.profil-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 33%;
+}
+
+.profil-banner {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.profil-banner-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.profil-banner-title {
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-align: center;
+    font-size: 4rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+}
+
+.profil-layout {
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.profil-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "profil-avatar profil-infos"
+        "profil-entreprise profil-infos";
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.profil-grid-avatar {
+    grid-area: profil-avatar;
+}
+
+.profil-grid-infos {
+    grid-area: profil-infos;
+}
+
+.profil-grid-entreprise {
+    grid-area: profil-entreprise;
+}
+
+.profil-orders-card {
+    max-height: 700px;
+    overflow-y: auto;
+}

@@ -1,0 +1,360 @@
+@import url('https://db.onlinewebfonts.com/c/dc7947b63602675ec87b023cfc35d028?family=Minecrafter+Alt');
+
+.entreprise-banner {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.entreprise-banner-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.entreprise-alert-container {
+    position: relative;
+    max-width: 80%;
+    margin: -1.75rem auto 1.75rem;
+    padding: 0 1rem;
+    z-index: 20;
+}
+
+.entreprise-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    font-family: 'Minecrafter Alt', sans-serif;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+.entreprise-alert-success {
+    background-color: rgba(34, 197, 94, 0.12);
+    border: 2px solid #5baa47;
+    color: #14532d;
+    text-shadow: 0 0 8px rgba(0, 150, 0, 0.8), 0 0 16px rgba(0, 150, 0, 0.6);
+}
+
+.entreprise-alert-error {
+    background-color: rgba(248, 113, 113, 0.12);
+    border: 2px solid #dc2626;
+    color: #7f1d1d;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.8), 0 0 16px rgba(239, 68, 68, 0.6);
+}
+
+.entreprise-alert-close {
+    margin-left: 0.75rem;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0;
+}
+
+.entreprise-alert-close:hover {
+    opacity: 0.9;
+}
+
+.entreprise-page {
+    max-width: 80%;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 2rem;
+}
+
+.entreprise-grid {
+    display: grid;
+    grid-template-rows: auto;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .entreprise-grid {
+        grid-template-rows: auto;
+    }
+}
+
+.entreprise-section {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+}
+
+.entreprise-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.5rem;
+}
+
+.entreprise-section-title {
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-align: center;
+    font-size: 6rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+}
+
+.entreprise-section-subtitle {
+    font-family: 'Minecrafter Alt', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+}
+
+.entreprise-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.entreprise-metric-card {
+    border: 1px solid #e3e3e0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.9rem;
+}
+
+.entreprise-metric-label {
+    font-size: 0.875rem;
+    color: #706f6c;
+}
+
+.entreprise-metric-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1b1b18;
+}
+
+.entreprise-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.entreprise-button-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.entreprise-button-primary {
+    background-color: #1b1b18;
+    color: #ffffff;
+}
+
+.entreprise-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.entreprise-text-muted {
+    color: #706f6c;
+}
+
+.entreprise-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.entreprise-modal-content {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 2px solid #5baa47;
+    box-shadow: 0 0 10px rgba(0, 150, 0, 0.8), 0 0 20px rgba(0, 150, 0, 0.6), 0 0 30px rgba(0, 150, 0, 0.4);
+}
+
+.entreprise-input,
+.entreprise-select,
+.entreprise-textarea {
+    width: 100%;
+    border: 1px solid #e3e3e0;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.entreprise-textarea {
+    resize: vertical;
+}
+
+/* Table styles for Entreprise page (duplicated from profile table, tailored) */
+.entreprise-search-container {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.entreprise-search-input {
+    max-width: 320px;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.entreprise-search-input:focus {
+    outline: none;
+    border-color: #5baa47;
+    box-shadow: 0 0 0 1px #5baa47, 0 1px 2px rgba(15, 23, 42, 0.1);
+}
+
+.entreprise-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.entreprise-table th,
+.entreprise-table td {
+    text-align: left;
+    padding: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entreprise-table thead tr {
+    border-bottom: 1px solid #e3e3e0;
+}
+
+.entreprise-table tbody tr {
+    border-bottom: 1px solid #f0f0ed;
+}
+
+.entreprise-table thead th {
+    background-color: #111827;
+    color: #e5e7eb;
+    font-family: 'Minecrafter Alt', sans-serif;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+        0 0 10px rgba(16, 185, 129, 0.8), 0 0 20px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.entreprise-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.entreprise-table tbody tr:nth-child(even) {
+    background-color: #f3f4f6;
+}
+
+.entreprise-table tbody tr:hover {
+    background-color: #dcfce7;
+}
+
+.entreprise-table-wrapper {
+    overflow: auto;
+    max-height: 420px;
+}
+
+.entreprise-table-row {
+    cursor: default;
+}
+
+.entreprise-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.entreprise-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 2px solid #5baa47;
+    object-fit: contain;
+    background-color: #f9fafb;
+}
+
+.entreprise-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    color: #ffffff;
+    background-color: #1b1b18;
+}
+
+.entreprise-icon-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.entreprise-icon-button-view {
+    background-color: #16a34a;
+}
+
+.entreprise-icon-button-print {
+    background-color: #15803d;
+}
+
+.entreprise-icon-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.entreprise-sortable-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.entreprise-sort-icon {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+/* Fixed width columns for Entreprise tables */
+/* Produits table column widths */
+#entreprise-products-table col:nth-child(1) { width: 240px; }
+#entreprise-products-table col:nth-child(2) { width: 180px; }
+#entreprise-products-table col:nth-child(3) { width: 120px; }
+#entreprise-products-table col:nth-child(4) { width: 100px; }
+#entreprise-products-table col:nth-child(5) { width: 140px; }
+#entreprise-products-table col:nth-child(6) { width: 140px; }
+
+/* Stocks table column widths */
+#entreprise-stocks-table col:nth-child(1) { width: 240px; }
+#entreprise-stocks-table col:nth-child(2) { width: 180px; }
+#entreprise-stocks-table col:nth-child(3) { width: 140px; }
+#entreprise-stocks-table col:nth-child(4) { width: 120px; }
+#entreprise-stocks-table col:nth-child(5) { width: 80px; }
+#entreprise-stocks-table col:nth-child(6) { width: 90px; }
+#entreprise-stocks-table col:nth-child(7) { width: 160px; }
