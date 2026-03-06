@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\EntrepriseController;
 use App\Http\Controllers\PanierController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BlogController;
 use Illuminate\Support\Facades\Route;
 
 // Route d'accueil
@@ -25,9 +26,11 @@ Route::post('/produits/{produitId}/commentaires', [CommentaireController::class,
 Route::delete('/commentaires/{commentaire}', [CommentaireController::class, 'destroy'])->name('commentaires.destroy')->middleware('auth');
 
 // Route blog
-Route::get('/blog', function () {
-    return view('blog.index');
-})->name('blog.index');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{article}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('/blog', [BlogController::class, 'store'])->name('blog.store')->middleware('auth');
+Route::post('/blog/{article}/commentaires', [BlogController::class, 'storeComment'])->name('blog.commentaires.store');
+Route::delete('/blog/commentaires/{commentaire}', [BlogController::class, 'destroyComment'])->name('blog.commentaires.destroy')->middleware('auth');
 
 // Route profil
 Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');

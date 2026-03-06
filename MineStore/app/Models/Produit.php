@@ -46,4 +46,9 @@ class Produit extends Model
     {
         return $this->belongsToMany(Categorie::class, 'classer', 'produit_id', 'categorie_id', 'id_produit', 'id_categorie');
     }
+
+    public function blogArticles()
+    {
+        return $this->hasMany(BlogArticle::class, 'produit_id', 'id_produit');
+    }
 }

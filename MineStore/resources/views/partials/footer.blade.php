@@ -51,5 +51,10 @@
                 &copy; {{ date('Y') }} minstore. Tous droits reserves.
             </p>
         </div>
+
+        {{-- Site fictif --}}
+        <div style="text-align: center; padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 0.75rem; color: #5baa47; font-family: 'Minecrafter Alt', sans-serif;">
+            Site fictif
+        </div>
     </div>
 </footer>
