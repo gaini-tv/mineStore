@@ -7,46 +7,41 @@
 @endpush
 
 @section('content')
-    {{-- Bannière avec titre et barre de recherche --}}
+    {{-- Bannière avec texte centré --}}
     <div class="w-full mb-8 relative">
         <img src="{{ asset('images/banierP.png') }}" alt="Bannière produits" class="w-full h-auto">
-        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 1rem;">
-            <h1 style="font-family: 'Minecrafter Alt', sans-serif; font-size: 6rem; font-weight: bold; color: white; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9); margin: 0;">
-                Nos produits
-            </h1>
-            <form method="GET" action="{{ route('produits.index') }}" id="product-search-form" style="width: 100%; max-width: 600px; margin-top: 2rem;">
-                <input type="hidden" name="categorie_id" value="{{ request('categorie_id') }}">
-                <div class="searchbar-container flex gap-2" style="background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0; padding: 0.25rem 0.75rem; min-height: 40px;">
-                    <input type="text"
-                           name="search"
-                           value="{{ request('search') }}"
-                           placeholder="Recherche..."
-                           style="flex: 1; padding: 0.25rem 0.5rem; border: 0; background: transparent; color: white; font-family: 'Minecrafter Alt', sans-serif; font-size: 0.9rem; outline: none;"
-                           class="placeholder-[#706f6c]">
-                    <button type="submit"
-                            style="padding: 0.25rem 0.75rem; background: transparent; border: none; cursor: pointer;"
-                            class="hover:opacity-80 transition-opacity flex items-center justify-center">
-                        <img src="{{ asset('images/iconrecherce.png') }}" alt="Rechercher" style="height: 1.25rem; width: 1.25rem;">
-                    </button>
-                </div>
-            </form>
-        </div>
+        <h1 class="absolute inset-0 flex items-center justify-center font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; font-size: 6rem; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);">
+            Nos produits
+        </h1>
     </div>
     
     <div class="container mx-auto px-4 py-8" style="padding-bottom: 5rem; ">
-        <div class="ProductNav mb-6" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
-            {{-- Gauche : nombre de produits trouvés --}}
-            <p style="font-family: 'Minecrafter Alt', sans-serif; color: #706f6c; margin: 0;">
-                {{ $produits->count() }} produit(s) trouvé(s)
-            </p>
+        <div class="ProductNav mb-6"
+             style="display: grid;margin-bottom:1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 1.5rem; row-gap: 1rem; align-items: center;">
+            <div class="searchProduct flex justify-center" style="grid-column: 1; grid-row: 1; width: 100%;">
+                <form method="GET" action="{{ route('produits.index') }}" id="product-search-form" style="width: 100%;">
+                    <div class="searchbar-container flex gap-2 p-2" style="width: 100%; background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 60%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
+                        <input type="text"
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="Recherche..."
+                               class="flex-1 px-3 py-2 border-0 bg-transparent text-white placeholder-[#706f6c] focus:outline-none text-sm"
+                               style="font-family: 'Minecrafter Alt', sans-serif; border-radius: 0; border: none; color: white;">
+                        <button type="submit"
+                                class="p-2 pr-6 bg-transparent hover:opacity-80 transition-opacity flex items-center justify-center"
+                                style="border-radius: 0; border: none; cursor: pointer;">
+                            <img src="{{ asset('images/iconrecherce.png') }}" alt="Rechercher" class="h-6 w-6">
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-            {{-- Droite : filtrage + bouton ajouter --}}
-            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                <form method="GET" action="{{ route('produits.index') }}" id="product-category-form" style="display: inline;">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
+            <div class="FilterProduct flex items-center justify-start gap-4" style="grid-column: 2; grid-row: 1;">
+                <form method="GET" action="{{ route('produits.index') }}" id="product-category-form">
                     <select
                         name="categorie_id"
-                        style="padding: 0.5rem 1rem; background: white; border: 1px solid #e3e3e0; border-radius: 4px; font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18; font-size: 0.875rem;"
+                        class="px-3 py-2 bg-white rounded border border-[#e3e3e0] text-sm"
+                        style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18;"
                         onchange="this.form.dispatchEvent(new Event('submit', { cancelable: true }))"
                     >
                         <option value="">
@@ -64,23 +59,34 @@
                     </select>
                 </form>
                 <button id="open-filter-btn"
-                        type="button"
-                        style="padding: 0.5rem 1rem; background: white; border: 1px solid #e3e3e0; border-radius: 4px; font-family: 'Minecrafter Alt', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                        class="px-4 py-2 bg-white rounded border border-[#e3e3e0] flex items-center gap-2 hover:opacity-80 transition-opacity"
+                        style="font-family: 'Minecrafter Alt', sans-serif;">
                     <span>Filtre</span>
-                    <img src="{{ asset('images/filtre.png') }}" alt="Filtrer" style="height: 1.5rem; width: 1.5rem;">
+                    <img src="{{ asset('images/filtre.png') }}" alt="Filtrer" class="h-8 w-8">
                 </button>
+            </div>
+
+            <div class="flex justify-end" style="grid-column: 3; grid-row: 1; justify-self: end;">
                 @if($canAddProduct ?? false)
                     <div class="relative btn-panier-wrapper" style="display: inline-block; width: 300px; margin: 0;">
-                        <img src="{{ asset('images/btn.png') }}" alt="" style="width: 100%; height: auto; display: block;">
+                        <img src="{{ asset('images/btn.png') }}" alt="" class="w-full h-auto block">
                         <button type="button"
                                 id="open-add-product-btn"
-                                style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; padding: 0; width: 100%; height: 100%;">
-                            <span style="color: white; font-weight: bold; font-size: 1rem; font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                                class="absolute inset-0 w-full h-full flex items-center justify-center hover:opacity-90 transition-opacity duration-200"
+                                style="background: transparent; border: none; cursor: pointer; padding: 0;">
+                            <span class="text-white font-bold text-sm md:text-base" style="font-family: 'Minecrafter Alt', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); font-size: 1rem;">
                                 AJOUTER UN PRODUIT
                             </span>
                         </button>
                     </div>
                 @endif
+            </div>
+
+            <div class="TextResult flex items-center gap-4 justify-center"
+                 style="grid-column: 1 / span 3; grid-row: 2;">
+                <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">
+                    {{ $produits->count() }} produit(s) trouvé(s)
+                </p>
             </div>
         </div>
 
