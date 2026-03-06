@@ -379,6 +379,58 @@
     pointer-events: none;
 }
 
+/* Menu mobile slide-in */
+#nav-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease-in-out;
+}
+#nav-mobile-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+#nav-mobile-overlay:not(.is-open) {
+    opacity: 0;
+    pointer-events: none;
+}
+#nav-mobile {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(320px, 85vw);
+    z-index: 70;
+    background-color: #2d5a27;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+}
+#nav-mobile.is-open {
+    transform: translateX(0);
+}
+#nav-mobile nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+#nav-mobile nav a {
+    display: block;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@media (min-width: 768px) {
+    #nav-mobile-overlay,
+    #nav-mobile {
+        display: none !important;
+    }
+}
+
 /* Barre de recherche avec image de fond */
 .searchbar-container {
     background-image: url('/images/searchbar.png');
@@ -428,6 +480,7 @@ a.navbar-link:hover {
     align-items: center;
     border: 1px solid #e5e5e5;
     transition: all 0.3s ease;
+    min-width: 0;
 }
 
 .product-card img {
@@ -436,12 +489,63 @@ a.navbar-link:hover {
 
 
 
-/* Style pour le badge de prix avec image de fond */
+/* Badge prix responsive */
 .product-card .price-badge {
     font-family: 'Minecrafter Alt', sans-serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    width: auto;
+    height: 45px;
+    padding-left: 12px;
+    padding-bottom: 18px;
+    left: -0.5rem;
+    top: -0.25rem;
 }
+@media (min-width: 640px) {
+    .product-card .price-badge {
+        height: 55px;
+        padding-left: 14px;
+        padding-bottom: 22px;
+        left: -1rem;
+        top: -0.35rem;
+    }
+}
+@media (min-width: 768px) {
+    .product-card .price-badge {
+        height: 65px;
+        padding-left: 17px;
+        padding-bottom: 25px;
+        left: -1.5rem;
+        top: -0.5rem;
+    }
+}
+@media (min-width: 1024px) {
+    .product-card .price-badge {
+        left: -2rem;
+    }
+}
+
+.product-card-price { font-size: 1rem; }
+@media (min-width: 640px) { .product-card-price { font-size: 1.25rem; } }
+@media (min-width: 768px) { .product-card-price { font-size: 1.5rem; } }
+
+.product-card-title {
+    font-size: 0.875rem;
+    line-height: 1.3;
+    word-break: break-word;
+}
+@media (min-width: 640px) { .product-card-title { font-size: 1.0625rem; } }
+@media (min-width: 768px) { .product-card-title { font-size: 1.25rem; } }
+
+.product-card-btn-wrapper { width: 100%; max-width: 100%; }
+@media (min-width: 480px) { .product-card-btn-wrapper { width: 85%; } }
+@media (min-width: 640px) { .product-card-btn-wrapper { width: 75%; } }
+@media (min-width: 768px) { .product-card-btn-wrapper { width: 63.33%; } }
+
+.product-card-btn-text { font-size: 0.65rem; padding: 0 4px; }
+@media (min-width: 480px) { .product-card-btn-text { font-size: 0.75rem; } }
+@media (min-width: 640px) { .product-card-btn-text { font-size: 0.875rem; } }
+@media (min-width: 768px) { .product-card-btn-text { font-size: 1rem; } }
 
 /* Style pour le bouton panier avec image de fond */
 .product-card button[type="button"] {
@@ -485,8 +589,90 @@ a.navbar-link:hover {
 
 .Allproduits {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+@media (min-width: 640px) {
+    .Allproduits { gap: 1.25rem; }
+}
+@media (min-width: 768px) {
+    .Allproduits {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+.produits-grid.Allproduits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 768px) {
+    .produits-grid.Allproduits { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .produits-grid.Allproduits { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Page produit show - responsive à partir de 766px */
+@media (max-width: 766px) {
+    .produit-show-info { grid-template-columns: 1fr !important; }
+    .produit-show-image { grid-column: 1 !important; order: 1; }
+    .produit-show-details { grid-column: 1 !important; order: 2; margin-right: 0 !important; }
+    .produit-selection-client { display: none !important; }
+}
+
+/* Page produits - responsive à partir de 766px */
+@media (max-width: 766px) {
+    .produits-banner-title { display: none !important; }
+    .produits-search-bar { display: none !important; }
+    .produits-search-icon-btn { display: flex !important; align-items: center; justify-content: center; }
+}
+@media (min-width: 767px) {
+    .produits-search-icon-btn { display: none !important; }
+}
+
+/* Section Nos jeux - responsive à 1328px */
+.jeux-slider-arrows {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    background-color: rgba(27, 27, 24, 0.8);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+}
+.jeux-slider-arrows:hover {
+    background-color: #1b1b18;
+}
+#jeu-slider-prev { left: 0.5rem; }
+#jeu-slider-next { right: 0.5rem; }
+
+@media (max-width: 1328px) {
+    .jeux-slider-arrows {
+        display: flex !important;
+    }
+    .jeux-images-container {
+        display: none !important;
+    }
+    .jeux-content-block {
+        max-width: 100% !important;
+        width: 100%;
+    }
+}
+@media (min-width: 1329px) {
+    .jeux-main {
+        flex-direction: row;
+    }
+    .jeux-slider-arrows {
+        display: none !important;
+    }
+    .jeux-content-block {
+        max-width: 50%;
+    }
 }
 
 /* Footer styles */

@@ -265,7 +265,7 @@
                         ];
                         $roleLabel = $roleLabels[$role] ?? $role;
                     @endphp
-                    <div class="mt-4 flex items-center gap-3">
+                    <div class="mt-4 flex items-center gap-3 profil-name-row">
                         <h1 class="text-3xl font-bold text-[#1b1b18] profil-minecrafter-text">
                             {{ auth()->user()->prenom }} {{ auth()->user()->nom }}
                         </h1>

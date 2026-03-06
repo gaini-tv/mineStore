@@ -4,13 +4,24 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
+    <style>
+        /* Page produits - responsive à partir de 766px */
+        @media (max-width: 766px) {
+            .produits-banner-title { display: none !important; }
+            .produits-search-bar { display: none !important; }
+            .produits-search-icon-btn { display: flex !important; align-items: center; justify-content: center; }
+        }
+        @media (min-width: 767px) {
+            .produits-search-icon-btn { display: none !important; }
+        }
+    </style>
 @endpush
 
 @section('content')
     {{-- Bannière avec texte centré --}}
     <div class="w-full mb-8 relative">
         <img src="{{ asset('images/banierP.png') }}" alt="Bannière produits" class="w-full h-auto">
-        <h1 class="absolute inset-0 flex items-center justify-center font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; font-size: 6rem; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);">
+        <h1 class="produits-banner-title absolute inset-0 flex items-center justify-center font-bold text-white" style="font-family: 'Minecrafter Alt', sans-serif; font-size: 6rem; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);">
             Nos produits
         </h1>
     </div>
@@ -18,8 +29,9 @@
     <div class="container mx-auto px-4 py-8" style="padding-bottom: 5rem; ">
         <div class="ProductNav mb-6"
              style="display: grid;margin-bottom:1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 1.5rem; row-gap: 1rem; align-items: center;">
-            <div class="searchProduct flex justify-center" style="grid-column: 1; grid-row: 1; width: 100%;">
-                <form method="GET" action="{{ route('produits.index') }}" id="product-search-form" style="width: 100%;">
+            <div class="searchProduct flex justify-center items-center gap-2" style="grid-column: 1; grid-row: 1; width: 100%;">
+                {{-- Barre de recherche (masquée à partir de 766px) --}}
+                <form method="GET" action="{{ route('produits.index') }}" id="product-search-form" class="produits-search-bar" style="width: 100%;">
                     <div class="searchbar-container flex gap-2 p-2" style="width: 100%; background-image: url('{{ asset('images/searchbar.png') }}'); background-size: 100% 60%; background-position: center; background-repeat: no-repeat; border: none; border-radius: 0;">
                         <input type="text"
                                name="search"
@@ -34,6 +46,12 @@
                         </button>
                     </div>
                 </form>
+                {{-- Icône recherche (visible uniquement à partir de 766px) --}}
+                <button type="button" id="open-search-popup-btn" class="produits-search-icon-btn p-2 rounded hover:opacity-80 transition-opacity" aria-label="Rechercher" style="display: none;">
+                    <svg class="w-8 h-8" fill="none" stroke="#1b1b18" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
             </div>
 
             <div class="FilterProduct flex items-center justify-start gap-4" style="grid-column: 2; grid-row: 1;">
@@ -87,6 +105,39 @@
                 <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">
                     {{ $produits->count() }} produit(s) trouvé(s)
                 </p>
+            </div>
+        </div>
+
+        {{-- Popup de recherche (mobile) --}}
+        <div id="search-popup-modal" class="hidden modal-form-backdrop">
+            <div class="modal-form-container" style="max-width: 400px;">
+                <div class="modal-form-header">
+                    <h2 class="modal-form-title">Rechercher un produit</h2>
+                    <button type="button" id="close-search-popup-btn" class="modal-form-close-button hover:opacity-80 transition-opacity">
+                        <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                    </button>
+                </div>
+                <form method="GET" action="{{ route('produits.index') }}" id="search-popup-form" style="padding: 20px;">
+                    @if(request('categorie_id'))<input type="hidden" name="categorie_id" value="{{ request('categorie_id') }}">@endif
+                    @if(request('prix_min'))<input type="hidden" name="prix_min" value="{{ request('prix_min') }}">@endif
+                    @if(request('prix_max'))<input type="hidden" name="prix_max" value="{{ request('prix_max') }}">@endif
+                    @if(request('sort'))<input type="hidden" name="sort" value="{{ request('sort') }}">@endif
+                    @if(request('order'))<input type="hidden" name="order" value="{{ request('order') }}">@endif
+                    <div class="modal-form-field-wrapper mb-4">
+                        <input type="text"
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="Nom du produit..."
+                               id="search-popup-input"
+                               class="modal-form-input"
+                               style="border: none; font-family: 'Minecrafter Alt', sans-serif;">
+                    </div>
+                    <button type="submit"
+                            class="w-full px-4 py-3 bg-[#5baa47] hover:bg-[#4a9938] text-white font-bold rounded-lg transition-colors"
+                            style="font-family: 'Minecrafter Alt', sans-serif;">
+                        Rechercher
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -289,7 +340,7 @@
             <p class="text-[#706f6c]" style="font-family: 'Minecrafter Alt', sans-serif;">Aucun produit disponible pour le moment.</p>
         @else
             {{-- Grille de produits --}}
-            <div class="Allproduits grid gap-6" style="gap: 2.5%; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.5rem;">
+            <div class="Allproduits produits-grid grid gap-4 sm:gap-5 md:gap-6" style="margin: 1rem;">
                 @foreach($produits as $produit)
                     @include('partials.product-card', [
                         'name' => $produit->nom,
@@ -448,6 +499,41 @@
             }
         });
 
+        // Popup de recherche (mobile)
+        var openSearchPopupBtn = document.getElementById('open-search-popup-btn');
+        var closeSearchPopupBtn = document.getElementById('close-search-popup-btn');
+        var searchPopupModal = document.getElementById('search-popup-modal');
+        var searchPopupForm = document.getElementById('search-popup-form');
+        var searchPopupInput = document.getElementById('search-popup-input');
+
+        openSearchPopupBtn?.addEventListener('click', function() {
+            searchPopupModal.classList.remove('hidden');
+            setTimeout(function() {
+                searchPopupInput?.focus();
+            }, 100);
+        });
+
+        closeSearchPopupBtn?.addEventListener('click', function() {
+            searchPopupModal.classList.add('hidden');
+        });
+
+        searchPopupModal?.addEventListener('click', function(e) {
+            if (e.target === searchPopupModal) {
+                searchPopupModal.classList.add('hidden');
+            }
+        });
+
+        if (searchPopupForm) {
+            searchPopupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var params = new URLSearchParams(new FormData(searchPopupForm));
+                var url = searchPopupForm.action + '?' + params.toString();
+                updateProductsFromUrl(url).then(function() {
+                    searchPopupModal.classList.add('hidden');
+                });
+            });
+        }
+
         openAddProductBtn?.addEventListener('click', function() {
             addProductModal.classList.remove('hidden');
         });
@@ -467,6 +553,9 @@
             if (e.key === 'Escape') {
                 if (!filterModal.classList.contains('hidden')) {
                     filterModal.classList.add('hidden');
+                }
+                if (searchPopupModal && !searchPopupModal.classList.contains('hidden')) {
+                    searchPopupModal.classList.add('hidden');
                 }
                 if (addProductModal && !addProductModal.classList.contains('hidden')) {
                     addProductModal.classList.add('hidden');

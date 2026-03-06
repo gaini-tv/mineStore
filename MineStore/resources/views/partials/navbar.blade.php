@@ -88,62 +88,116 @@
             </div>
         </div>
 
-        {{-- Menu mobile déroulant --}}
-        <div id="nav-mobile" class="hidden md:hidden pb-2 border-t border-[#e3e3e0]">
-            <div class="flex flex-col gap-1 pt-2">
-                <a href="{{ route('home') }}" class="navbar-link px-3 py-2 rounded-lg font-medium text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Accueil</a>
-                <a href="{{ route('produits.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Nos produits</a>
-                <a href="{{ route('blog.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Blog</a>
-                @if (auth()->check() && auth()->user()->entreprise_id && auth()->user()->role !== 'admin' && auth()->user()->role !== 'user')
-                    <a href="{{ route('entreprise.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Entreprise</a>
-                @endif
-                @if (auth()->check() && auth()->user()->role === 'admin')
-                    <a href="{{ route('admin.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Administration</a>
-                @endif
-                @if (auth()->check())
-                    <a href="{{ route('profil.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>
-                    <a href="{{ route('panier.index') }}" class="navbar-link px-3 py-2 rounded-lg text-white transition-all duration-300 text-[1.2rem]" style="font-family: 'Minecrafter Alt', sans-serif;">Mon panier</a>
-                @endif
-            </div>
-        </div>
     </div>
 </nav>
 
-<script>
-    // Menu mobile
-    document.getElementById('nav-toggle')?.addEventListener('click', function() {
-        document.getElementById('nav-mobile')?.classList.toggle('hidden');
-    });
-    
-    // Dropdown profil
-    const profileToggle = document.getElementById('profile-toggle');
-    const profileMenu = document.getElementById('profile-menu');
-    if (profileToggle && profileMenu) {
-        profileToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            profileMenu.classList.toggle('hidden');
-        });
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#profile-dropdown')) profileMenu.classList.add('hidden');
-        });
-    }
+{{-- Overlay + Slide-in menu mobile (responsive uniquement) --}}
+<div id="nav-mobile-overlay" aria-hidden="true"></div>
+<div id="nav-mobile" aria-hidden="true">
+    <div class="flex items-center justify-between p-6 border-b border-white/20">
+        <span class="text-white text-lg font-medium" style="font-family: 'Minecrafter Alt', sans-serif;">Menu</span>
+        <button type="button" id="nav-close" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors" aria-label="Fermer le menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <nav class="p-6 overflow-y-auto">
+        <a href="{{ route('home') }}" class="navbar-link block font-medium text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Accueil</a>
+        <a href="{{ route('produits.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Nos produits</a>
+        <a href="{{ route('blog.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Blog</a>
+        @if (auth()->check() && auth()->user()->entreprise_id && auth()->user()->role !== 'admin' && auth()->user()->role !== 'user')
+            <a href="{{ route('entreprise.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Entreprise</a>
+        @endif
+        @if (auth()->check() && auth()->user()->role === 'admin')
+            <a href="{{ route('admin.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Administration</a>
+        @endif
+        @if (auth()->check())
+            <a href="{{ route('profil.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Mon profil</a>
+            <a href="{{ route('panier.index') }}" class="navbar-link block text-white transition-all duration-300 text-[1.2rem] hover:bg-white/15" style="font-family: 'Minecrafter Alt', sans-serif;">Mon panier</a>
+        @endif
+    </nav>
+</div>
 
-    // Navbar hide/show on scroll
-    let lastScrollTop = 0;
-    const navbar = document.getElementById('main-navbar');
-    let scrollThreshold = 10; // Minimum scroll distance before hiding
-    
-    window.addEventListener('scroll', function() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
-            // Scrolling down - hide navbar
-            navbar.classList.add('navbar-hidden');
-        } else if (scrollTop < lastScrollTop) {
-            // Scrolling up - show navbar
-            navbar.classList.remove('navbar-hidden');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menu mobile slide-in
+        var navToggle = document.getElementById('nav-toggle');
+        var navClose = document.getElementById('nav-close');
+        var navMobile = document.getElementById('nav-mobile');
+        var navOverlay = document.getElementById('nav-mobile-overlay');
+
+        function openMobileMenu() {
+            if (navMobile) navMobile.classList.add('is-open');
+            if (navMobile) navMobile.setAttribute('aria-hidden', 'false');
+            if (navOverlay) navOverlay.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
         }
-        
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
+        function closeMobileMenu() {
+            if (navMobile) navMobile.classList.remove('is-open');
+            if (navMobile) navMobile.setAttribute('aria-hidden', 'true');
+            if (navOverlay) navOverlay.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+
+        function toggleMobileMenu() {
+            var isOpen = navMobile && navMobile.classList.contains('is-open');
+            if (isOpen) closeMobileMenu();
+            else openMobileMenu();
+        }
+
+        if (navToggle) navToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+        if (navClose) navClose.addEventListener('click', closeMobileMenu);
+        if (navOverlay) navOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navMobile && navMobile.classList.contains('is-open')) {
+                closeMobileMenu();
+            }
+        });
+
+        if (navMobile) {
+            navMobile.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', closeMobileMenu);
+            });
+        }
+
+        window.matchMedia('(min-width: 768px)').addEventListener('change', function(e) {
+            if (e.matches) closeMobileMenu();
+        });
+
+        // Dropdown profil
+        var profileToggle = document.getElementById('profile-toggle');
+        var profileMenu = document.getElementById('profile-menu');
+        if (profileToggle && profileMenu) {
+            profileToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#profile-dropdown')) profileMenu.classList.add('hidden');
+            });
+        }
+
+        // Navbar hide/show on scroll
+        var lastScrollTop = 0;
+        var navbar = document.getElementById('main-navbar');
+        var scrollThreshold = 10;
+        if (navbar) {
+            window.addEventListener('scroll', function() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
+                    navbar.classList.add('navbar-hidden');
+                } else if (scrollTop < lastScrollTop) {
+                    navbar.classList.remove('navbar-hidden');
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
+        }
     });
 </script>
