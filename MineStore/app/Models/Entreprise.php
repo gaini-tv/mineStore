@@ -30,5 +30,10 @@ class Entreprise extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function produits()
+    {
+        return $this->hasMany(Produit::class, 'entreprise_id', 'id_entreprise');
+    }
 }
 

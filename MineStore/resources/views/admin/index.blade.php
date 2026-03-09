@@ -129,10 +129,11 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <button
-                                                                type="submit"
-                                                                class="admin-icon-button admin-icon-button-delete"
-                                                                title="Supprimer le compte"
-                                                            >
+                                                        type="submit"
+                                                        class="admin-icon-button admin-icon-button-delete"
+                                                        title="Supprimer le compte"
+                                                        onclick="event.stopPropagation();"
+                                                    >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                     <polyline points="3 6 5 6 21 6"/>
                                                                     <path d="M19 6l-1 14H6L5 6"/>
@@ -212,7 +213,7 @@
                                                             <button
                                                                 type="button"
                                                                 class="admin-icon-button admin-icon-button-eye"
-                                                                onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='flex'"
+                                                                onclick="event.stopPropagation(); document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='flex'"
                                                                 title="Voir l’entreprise"
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -327,7 +328,7 @@
                                                         <div class="admin-user-actions">
                                                             <form action="{{ route('admin.entreprises.approveDeletion', $demande) }}" method="POST" class="inline">
                                                                 @csrf
-                                                                <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Accepter la suppression">
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Accepter la suppression" onclick="event.stopPropagation();">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                         <polyline points="3 6 5 6 21 6"/>
                                                                         <path d="M19 6l-1 14H6L5 6"/>
@@ -339,7 +340,7 @@
                                                             </form>
                                                             <form action="{{ route('admin.entreprises.cancelDeletion', $demande) }}" method="POST" class="inline">
                                                                 @csrf
-                                                                <button type="submit" class="admin-icon-button admin-icon-button-eye" title="Refuser la suppression">
+                                                                <button type="submit" class="admin-icon-button admin-icon-button-eye" title="Refuser la suppression" onclick="event.stopPropagation();">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                         <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
                                                                         <circle cx="12" cy="12" r="3"/>
@@ -530,6 +531,34 @@
                                 @endunless
                             </div>
                         </form>
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- Modales de détails des entreprises --}}
+            @foreach($entreprises as $entreprise)
+                <div id="entreprise-active-modal-{{ $entreprise->id_entreprise }}" class="hidden modal-form-backdrop" style="display: none;" onclick="if(event.target === this) this.style.display='none'">
+                    <div class="modal-form-container">
+                        <div class="modal-form-header">
+                            <h3 class="modal-form-title">Détails de l'entreprise</h3>
+                            <button type="button" class="modal-form-close-button" onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='none'">
+                                <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                            </button>
+                        </div>
+                        <div class="modal-form-body p-4" style="padding: 1.5rem;">
+                            <p><strong>Nom :</strong> {{ $entreprise->nom }}</p>
+                            <p><strong>Propriétaire :</strong> {{ $entreprise->owner ? $entreprise->owner->prenom . ' ' . $entreprise->owner->nom : 'Aucun' }}</p>
+                            <p><strong>Email :</strong> {{ $entreprise->owner ? $entreprise->owner->email : 'N/A' }}</p>
+                            <p><strong>Statut :</strong> {{ $entreprise->statut }}</p>
+                            <p><strong>Date de création :</strong> {{ optional($entreprise->created_at)->format('d/m/Y H:i') }}</p>
+                            <div style="margin-top: 1rem;">
+                                <p><strong>Membres :</strong> {{ $entreprise->users()->count() }}</p>
+                                <p><strong>Produits :</strong> {{ $entreprise->produits()->count() ?? 0 }}</p>
+                            </div>
+                        </div>
+                        <div class="modal-form-footer">
+                            <button type="button" class="admin-button" onclick="document.getElementById('entreprise-active-modal-{{ $entreprise->id_entreprise }}').style.display='none'">Fermer</button>
+                        </div>
                     </div>
                 </div>
             @endforeach
