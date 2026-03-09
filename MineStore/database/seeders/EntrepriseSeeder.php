@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Categorie;
+use App\Models\Article;
 use App\Models\Entreprise;
 use App\Models\Produit;
 use App\Models\User;
@@ -118,6 +119,38 @@ class EntrepriseSeeder extends Seeder
                 if (!$produit->categories()->where('categories.id_categorie', $categorieLivre->id_categorie)->exists()) {
                     $produit->categories()->attach($categorieLivre->id_categorie);
                 }
+            }
+        }
+
+        // Création de l'article de blog pour le Guide Combat
+        $articleCombatData = [
+            'nom' => 'Devenez un Maître du Combat Minecraft',
+            'description' => "Le monde de Minecraft est dangereux. Entre les zombies qui rôdent la nuit, les squelettes qui tirent à distance et les creepers explosifs, la survie n'est jamais garantie.\n\nNotre **Guide Combat** est l'outil indispensable pour tout aventurier souhaitant dominer ses ennemis. \n\nDans ce livre, vous apprendrez :\n- Les meilleures techniques pour affronter chaque type de mob.\n- Comment fabriquer et enchanter les armes les plus puissantes.\n- Les stratégies pour vaincre l'Ender Dragon et le Wither.\n- L'art du PvP pour triompher de vos adversaires en multijoueur.\n\nNe laissez plus la peur vous paralyser. Équipez-vous du savoir nécessaire pour devenir une légende du combat !",
+        ];
+
+        $articleCombat = Article::firstOrCreate(['nom' => $articleCombatData['nom']], $articleCombatData);
+
+        // Lier le produit Combat à l'article
+        $produitCombat = Produit::where('reference', 'BOOK-GUIDE-COMB')->first();
+        if ($produitCombat) {
+            if (!$articleCombat->produits()->where('produits.id_produit', $produitCombat->id_produit)->exists()) {
+                $articleCombat->produits()->attach($produitCombat->id_produit);
+            }
+        }
+
+        // Création de l'article de blog pour le Guide Exploration
+        $articleExploData = [
+            'nom' => 'Explorez les Confins du Monde Cubique',
+            'description' => "L'exploration est au cœur de l'expérience Minecraft. Des plaines verdoyantes aux déserts arides, en passant par les mystérieuses forêts de champignons, chaque biome regorge de secrets.\n\nNotre **Guide Exploration** est votre passeport pour l'aventure.\n\nCe livre complet vous dévoilera :\n- Les caractéristiques de tous les biomes et les ressources qu'on y trouve.\n- Comment localiser les temples, les villages et les forteresses.\n- Les astuces pour survivre dans le Nether et l'End.\n- Comment cartographier votre monde pour ne jamais vous perdre.\n\nPréparez votre sac à dos, prenez votre boussole et partez à la découverte de l'inconnu avec notre guide expert !",
+        ];
+
+        $articleExplo = Article::firstOrCreate(['nom' => $articleExploData['nom']], $articleExploData);
+
+        // Lier le produit Exploration à l'article
+        $produitExplo = Produit::where('reference', 'BOOK-GUIDE-EXPL')->first();
+        if ($produitExplo) {
+            if (!$articleExplo->produits()->where('produits.id_produit', $produitExplo->id_produit)->exists()) {
+                $articleExplo->produits()->attach($produitExplo->id_produit);
             }
         }
     }

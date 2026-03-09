@@ -5,9 +5,9 @@
             <div class="footer-section">
                 <h3>a propos</h3>
                 <ul>
-                    <li><a href="#">Qui sommes-nous</a></li>
-                    <li><a href="#">Notre histoire</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('pages.about') }}">Qui sommes-nous</a></li>
+                    <li><a href="{{ route('pages.history') }}">Notre histoire</a></li>
+                    <li><a href="{{ route('pages.contact') }}">Contact</a></li>
                 </ul>
             </div>
 
@@ -15,10 +15,10 @@
             <div class="footer-section">
                 <h3>Informations</h3>
                 <ul>
-                    <li><a href="#">Livraison</a></li>
-                    <li><a href="#">Retours</a></li>
-                    <li><a href="#">CGV</a></li>
-                    <li><a href="#">Mentions légales</a></li>
+                    <li><a href="{{ route('pages.shipping') }}">Livraison</a></li>
+                    <li><a href="{{ route('pages.returns') }}">Retours</a></li>
+                    <li><a href="{{ route('pages.terms') }}">CGV</a></li>
+                    <li><a href="{{ route('pages.legal') }}">Mentions légales</a></li>
                 </ul>
             </div>
 
@@ -26,10 +26,10 @@
             <div class="footer-section">
                 <h3>Mon compte</h3>
                 <ul>
-                    <li><a href="#">Connexion</a></li>
-                    <li><a href="#">Inscription</a></li>
-                    <li><a href="#">Mes commandes</a></li>
-                    <li><a href="#">Mon panier</a></li>
+                    <li><a href="{{ route('login') }}">Connexion</a></li>
+                    <li><a href="{{ route('register') }}">Inscription</a></li>
+                    <li><a href="{{ route('profil.index') }}">Mes commandes</a></li>
+                    <li><a href="{{ route('panier.index') }}">Mon panier</a></li>
                 </ul>
             </div>
 

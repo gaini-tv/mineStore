@@ -69,10 +69,10 @@
                         </div>
                         <div style="padding: 1rem;">
                             <h2 class="blog-card-title" style="font-family: 'Minecrafter Alt', sans-serif; font-size: 1.125rem; font-weight: bold; color: #1b1b18; margin-bottom: 0.25rem;">
-                                {{ $article->titre }}
+                                {{ $article->nom }}
                             </h2>
                             <p class="blog-card-desc" style="font-size: 0.875rem; color: #1b1b18; margin-bottom: 0.5rem;">
-                                {{ Str::limit(strip_tags($article->contenu), 80) }}
+                                {{ Str::limit(strip_tags($article->description), 80) }}
                             </p>
                             <p class="blog-card-meta" style="font-size: 0.75rem; color: #1b1b18; font-family: 'Minecrafter Alt', sans-serif; margin: 0;">
                                 {{ $article->produit?->nom ?? 'Produit' }} · {{ $article->created_at->format('d/m/Y') }}

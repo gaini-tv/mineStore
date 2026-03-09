@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Models\Article;
 use App\Models\Entreprise;
 use App\Models\BannedWord;
 use App\Models\User;
@@ -105,6 +106,8 @@ class AdminController extends Controller
             ->groupBy('user_id')
             ->pluck('attempts', 'user_id');
 
+        $articles = Article::with('produits')->latest()->get();
+
         return view('admin.index', [
             'users' => $users,
             'categories' => $categories,
@@ -114,6 +117,7 @@ class AdminController extends Controller
             'bannedWords' => $bannedWords,
             'entreprisesStats' => $entreprisesStats,
             'pendingAttemptsByOwner' => $pendingAttemptsByOwner,
+            'articles' => $articles,
         ]);
     }
 

@@ -1,0 +1,133 @@
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Instrument Sans', sans-serif;
+    color: #1b1b18;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-family: 'Minecrafter Alt', sans-serif;
+    font-size: 3rem;
+    color: #1b1b18;
+    margin-bottom: 0.5rem;
+}
+
+.page-header .subtitle {
+    font-size: 1.25rem;
+    color: #5baa47;
+    font-weight: 500;
+}
+
+.contact-grid {
+    display: flex;
+    justify-content: center;
+}
+
+.contact-info {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+}
+
+.contact-info h2 {
+    font-family: 'Minecrafter Alt', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #1b1b18;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.info-item .icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    margin-top: 0.2rem;
+}
+
+.info-item h3 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1b1b18;
+}
+
+.info-item p {
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.contact-form {
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form h2 {
+    font-family: 'Minecrafter Alt', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #1b1b18;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #1b1b18;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #5baa47;
+    box-shadow: 0 0 0 3px rgba(91, 170, 71, 0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    background-color: #5baa47;
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: 'Minecrafter Alt', sans-serif;
+}
+
+.submit-btn:hover {
+    background-color: #4a8f3a;
+}

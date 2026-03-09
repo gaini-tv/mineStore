@@ -47,8 +47,13 @@ class Produit extends Model
         return $this->belongsToMany(Categorie::class, 'classer', 'produit_id', 'categorie_id', 'id_produit', 'id_categorie');
     }
 
-    public function blogArticles()
+    public function articles()
     {
-        return $this->hasMany(BlogArticle::class, 'produit_id', 'id_produit');
+        return $this->belongsToMany(Article::class, 'asso_produit_article', 'produit_id', 'article_id');
+    }
+
+    public function commentaires()
+    {
+        return $this->hasMany(Commentaire::class, 'produit_id', 'id_produit');
     }
 }

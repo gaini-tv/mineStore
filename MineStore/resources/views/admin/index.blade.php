@@ -359,6 +359,73 @@
                 </section>
             </div>
 
+            <div class="admin-section-block">
+                <div class="admin-section-header">
+                    <h2 class="admin-section-header-title">
+                        Gestion des articles
+                    </h2>
+                </div>
+                <section class="admin-section">
+                    <div class="admin-users-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Produit associé</th>
+                                    <th>Entreprise</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($articles as $article)
+                                    <tr>
+                                        <td>{{ $article->nom }}</td>
+                                        <td>
+                                            @if($article->produit)
+                                                <a href="{{ route('produits.show', $article->produit->id_produit) }}" style="color: #5baa47; text-decoration: underline;">
+                                                    {{ $article->produit->nom }}
+                                                </a>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($article->produit && $article->produit->entreprise)
+                                                {{ $article->produit->entreprise->nom }}
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                        <td>{{ $article->created_at->format('d/m/Y') }}</td>
+                                        <td>
+                                            <div class="admin-user-actions">
+                                                <a href="{{ route('blog.show', $article) }}" class="admin-icon-button admin-icon-button-eye" title="Voir l'article" target="_blank">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                                        <circle cx="12" cy="12" r="3"/>
+                                                    </svg>
+                                                </a>
+                                                <form action="{{ route('blog.destroy', $article) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Supprimer">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M3 6h18"/>
+                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
             {{-- Modales de gestion des utilisateurs --}}
             @foreach($users as $user)
                 @php

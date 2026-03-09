@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $article->titre)
+@section('title', $article->nom)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/modal-form.css') }}">
@@ -26,17 +26,17 @@
             {{-- Titre, description, bouton --}}
             <div style="padding: 2rem 2.5rem;">
                 <h1 style="font-family: 'Minecrafter Alt', sans-serif; font-size: 2rem; font-weight: bold; color: #1b1b18; margin-bottom: 0.75rem;">
-                    {{ $article->titre }}
+                    {{ $article->nom }}
                 </h1>
                 <p style="font-size: 0.875rem; color: #706f6c; margin-bottom: 1.5rem;">
-                    Par {{ $article->user->prenom ?? $article->user->name }} · {{ $article->created_at->format('d/m/Y à H:i') }}
+                    {{ $article->created_at->format('d/m/Y à H:i') }}
                     @if($article->produit)
                         · <a href="{{ route('produits.show', $article->produit->id_produit) }}" style="color: #5baa47; text-decoration: none;">{{ $article->produit->nom }}</a>
                     @endif
                 </p>
 
                 {{-- Description du blog --}}
-                <div style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; white-space: pre-wrap;">{!! nl2br(e($article->contenu)) !!}</div>
+                <div style="font-family: 'Minecrafter Alt', sans-serif; color: #1b1b18; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; white-space: pre-wrap;">{!! nl2br(e($article->description)) !!}</div>
 
                 {{-- Bouton Aller sur le produit --}}
                 @if($article->produit)

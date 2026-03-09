@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\CommentaireController;
@@ -29,6 +30,7 @@ Route::delete('/commentaires/{commentaire}', [CommentaireController::class, 'des
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{article}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog', [BlogController::class, 'store'])->name('blog.store')->middleware('auth');
+Route::delete('/blog/{article}', [BlogController::class, 'destroy'])->name('blog.destroy')->middleware('auth');
 Route::post('/blog/{article}/commentaires', [BlogController::class, 'storeComment'])->name('blog.commentaires.store');
 Route::delete('/blog/commentaires/{commentaire}', [BlogController::class, 'destroyComment'])->name('blog.commentaires.destroy')->middleware('auth');
 
@@ -51,6 +53,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/email/verify/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
 Route::get('/entreprise/confirm-delete/{token}', [EntrepriseController::class, 'confirmDeletion'])->name('entreprise.confirmDeletion');
+
+// Pages statiques
+Route::get('/a-propos', [PageController::class, 'about'])->name('pages.about');
+Route::get('/notre-histoire', [PageController::class, 'history'])->name('pages.history');
+Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact');
+Route::get('/livraison', [PageController::class, 'shipping'])->name('pages.shipping');
+Route::get('/retours', [PageController::class, 'returns'])->name('pages.returns');
+Route::get('/cgv', [PageController::class, 'terms'])->name('pages.terms');
+Route::get('/mentions-legales', [PageController::class, 'legal'])->name('pages.legal');
 
 // Routes panier
 Route::middleware('auth')->group(function () {
