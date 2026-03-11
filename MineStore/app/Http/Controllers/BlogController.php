@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Commentaire;
 use App\Models\Categorie;
 use App\Models\Produit;
+use App\Models\BannedWord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,10 +86,12 @@ class BlogController extends Controller
             return back()->with('error', 'Impossible de commenter : aucun produit associé.');
         }
 
+        $contenuFiltre = BannedWord::filterText($request->contenu);
+
         Commentaire::create([
             'produit_id' => $produit->id_produit,
             'user_id' => Auth::id(),
-            'contenu' => $request->contenu,
+            'contenu' => $contenuFiltre,
             'date_' => now(),
             'statut' => 'approuvé',
             'note' => 5, // Note par défaut pour compatibilité

@@ -118,14 +118,14 @@
                                                     </button>
                                                     @unless($isAbsoluteAdmin)
                                                         <form
-                                                            action="{{ route('admin.users.destroy', $user) }}"
-                                                            method="POST"
-                                                            class="admin-async-form"
-                                                            data-admin-action="delete-user"
-                                                            data-user-id="{{ $user->id }}"
-                                                            onsubmit="event.stopPropagation(); return confirm('Supprimer ce compte utilisateur ?');"
-                                                            onclick="event.stopPropagation();"
-                                                        >
+                                                        action="{{ route('admin.users.destroy', $user) }}"
+                                                        method="POST"
+                                                        class="admin-async-form"
+                                                        data-admin-action="delete-user"
+                                                        data-user-id="{{ $user->id }}"
+                                                        data-confirm-message="Supprimer ce compte utilisateur ?"
+                                                        onclick="event.stopPropagation();"
+                                                    >
                                                             @csrf
                                                             @method('DELETE')
                                                             <button
@@ -326,7 +326,7 @@
                                                     <td>{{ $membresCount }}</td>
                                                     <td>
                                                         <div class="admin-user-actions">
-                                                            <form action="{{ route('admin.entreprises.approveDeletion', $demande) }}" method="POST" class="inline">
+                                                            <form action="{{ route('admin.entreprises.approveDeletion', $demande) }}" method="POST" class="inline" data-confirm-message="Confirmer la suppression définitive de l'entreprise ?">
                                                                 @csrf
                                                                 <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Accepter la suppression" onclick="event.stopPropagation();">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -407,7 +407,7 @@
                                                         <circle cx="12" cy="12" r="3"/>
                                                     </svg>
                                                 </a>
-                                                <form action="{{ route('blog.destroy', $article) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+                                                <form action="{{ route('blog.destroy', $article) }}" method="POST" class="inline" data-confirm-message="Êtes-vous sûr de vouloir supprimer cet article ?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="admin-icon-button admin-icon-button-delete" title="Supprimer">
@@ -619,7 +619,7 @@
                                                                     action="{{ route('admin.categories.destroy', $categorie) }}"
                                                                     method="POST"
                                                                     class="admin-async-form"
-                                                                    onsubmit="return confirm('Supprimer cette catégorie ?');"
+                                                                    data-confirm-message="Supprimer cette catégorie ?"
                                                                 >
                                                                     @csrf
                                                                     @method('DELETE')
@@ -759,6 +759,7 @@
                                             action="{{ route('admin.banned-words.destroy', $bannedWord) }}"
                                             method="POST"
                                             class="admin-bannedword-tag admin-bannedword-delete-form"
+                                            data-confirm-message="Supprimer ce mot banni ?"
                                         >
                                             @csrf
                                             @method('DELETE')
@@ -778,8 +779,86 @@
         </div>
     </div>
 
+    {{-- Modal de confirmation global --}}
+    <div id="admin-confirmation-modal" class="hidden modal-form-backdrop" style="z-index: 1000; display: none;" onclick="if(event.target === this) closeConfirmationModal()">
+        <div class="modal-form-container" style="max-width: 400px;">
+            <div class="modal-form-header">
+                <h3 class="modal-form-title">Confirmation</h3>
+                <button type="button" class="modal-form-close-button" onclick="closeConfirmationModal()">
+                    <img src="{{ asset('images/cross.png') }}" alt="Fermer" class="h-6 w-6">
+                </button>
+            </div>
+            <div class="modal-form-body p-4" style="padding: 1.5rem; text-align: center;">
+                <p id="admin-confirmation-message" style="font-size: 1.1rem; color: #333;">Êtes-vous sûr ?</p>
+            </div>
+            <div class="modal-form-footer" style="justify-content: center; gap: 1rem;">
+                <button type="button" class="admin-button" onclick="closeConfirmationModal()">Annuler</button>
+                <button type="button" class="admin-button admin-button-delete" id="admin-confirmation-confirm-btn" style="background-color: #dc3545; color: white;">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
+        let formToConfirm = null;
+
+        function openConfirmationModal(form, message) {
+            formToConfirm = form;
+            const msgElement = document.getElementById('admin-confirmation-message');
+            if (msgElement) {
+                msgElement.textContent = message;
+            }
+            const modal = document.getElementById('admin-confirmation-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeConfirmationModal() {
+            formToConfirm = null;
+            const modal = document.getElementById('admin-confirmation-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('admin-confirmation-confirm-btn').addEventListener('click', function() {
+            if (formToConfirm) {
+                // Si le formulaire est asynchrone, on appelle submit() directement, 
+                // mais il faut bypasser la vérification de confirmation pour éviter une boucle infinie.
+                // On ajoute un attribut temporaire pour dire "confirmé".
+                formToConfirm.setAttribute('data-confirmed', 'true');
+                
+                // On simule le submit
+                // Note: form.submit() ne déclenche pas l'événement submit pour les écouteurs JS (comme admin-async-form)
+                // Donc on doit utiliser requestSubmit() si disponible, ou dispatcher l'événement manuellement.
+                if (typeof formToConfirm.requestSubmit === 'function') {
+                    formToConfirm.requestSubmit();
+                } else {
+                    formToConfirm.submit();
+                }
+                
+                closeConfirmationModal();
+            }
+        });
+
+        // Intercepteur global pour les formulaires nécessitant une confirmation
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.getAttribute('data-confirm-message')) {
+                if (form.getAttribute('data-confirmed') === 'true') {
+                    form.removeAttribute('data-confirmed');
+                    return;
+                }
+                
+                e.preventDefault();
+                e.stopPropagation();
+                openConfirmationModal(form, form.getAttribute('data-confirm-message'));
+            }
+        }, true);
+
         function getAdminToastContainer() {
             let container = document.getElementById('admin-toast-container');
             if (!container) {
